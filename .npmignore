@@ -1,3 +1,7 @@
+dosplay
+!test/audio-node.js 
+!test/webgl.js
+
 dreamlayers-em-dosbox-em-dosbox-svn-sdl2
 3rd-party
 .idea

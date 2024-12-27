@@ -32,7 +32,7 @@ export type InitFs = InitFsEntry | InitFsEntry[];
 export interface Emulators {
     // * pathPrefix - by default emulators will load wasm modules relatively from current path,
     // you should specify path prefix if you want to load them from different place
-    pathPrefix: string;
+    resolve_path: (a:string)=>string;
 
     // * version - version of emulators build
     version: string;
@@ -166,4 +166,9 @@ if (typeof window !== "undefined") {
     (window as any).emulators = emulatorsImpl;
 } if (typeof global !== "undefined") {
     (global as any).emulators = emulatorsImpl;
+}
+
+
+export function get_emulators():Emulators{
+    return emulatorsImpl
 }

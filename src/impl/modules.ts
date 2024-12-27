@@ -92,7 +92,7 @@ class Host {
 export const host = new Host();
 
 export class WasmModulesImpl implements IWasmModules {
-    private pathPrefix: string;
+    private resolve_path: (p:string)=>string;
     private wdosboxJs: string;
     private wdosboxxJs: string;
 
@@ -102,14 +102,15 @@ export class WasmModulesImpl implements IWasmModules {
 
     public wasmSupported = false;
 
-    constructor(pathPrefix: string,
+    constructor(resolve_path: string|((p:string)=>string),
         wdosboxJs: string,
         wdosboxxJs: string) {
-        if (pathPrefix.length > 0 && pathPrefix[pathPrefix.length - 1] !== "/") {
-            pathPrefix += "/";
+        
+        if (typeof resolve_path =="string"){
+            this.resolve_path=a=>resolve_path+"/"+a;  
+        }else{
+            this.resolve_path = resolve_path;
         }
-
-        this.pathPrefix = pathPrefix;
         this.wdosboxJs = wdosboxJs;
         this.wdosboxxJs = wdosboxxJs;
     }
@@ -119,7 +120,7 @@ export class WasmModulesImpl implements IWasmModules {
             return this.libzipPromise;
         }
 
-        this.libzipPromise = this.loadModule(this.pathPrefix + "wlibzip.js", "WLIBZIP");
+        this.libzipPromise = this.loadModule(this.resolve_path("wlibzip.js"), "WLIBZIP");
         return this.libzipPromise;
     }
 
@@ -128,7 +129,7 @@ export class WasmModulesImpl implements IWasmModules {
             return this.dosboxPromise;
         }
 
-        this.dosboxPromise = this.loadModule(this.pathPrefix + this.wdosboxJs, "WDOSBOX");
+        this.dosboxPromise = this.loadModule(this.resolve_path(this.wdosboxJs), "WDOSBOX");
 
         return this.dosboxPromise;
     }
@@ -138,7 +139,7 @@ export class WasmModulesImpl implements IWasmModules {
             return this.dosboxxPromise;
         }
 
-        this.dosboxxPromise = this.loadModule(this.pathPrefix + this.wdosboxxJs, "WDOSBOXX");
+        this.dosboxxPromise = this.loadModule(this.resolve_path(this.wdosboxxJs), "WDOSBOXX");
 
         return this.dosboxxPromise;
     }
