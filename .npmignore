@@ -1,4 +1,4 @@
-dosplay
+*.tgz
 !test/audio-node.js 
 !test/webgl.js
 

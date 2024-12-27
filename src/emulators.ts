@@ -168,7 +168,16 @@ if (typeof window !== "undefined") {
     (global as any).emulators = emulatorsImpl;
 }
 
+import {String2jsdosCode} from "./string2jsdoskey";
+import {Build} from "./build";
+import {Keys} from "./keys";
 
 export function get_emulators():Emulators{
     return emulatorsImpl
+}
+
+export const utils = {
+    String2jsdosCode,
+    Build,
+    Keys,
 }
