@@ -33,6 +33,7 @@ export interface Emulators {
     // * pathPrefix - by default emulators will load wasm modules relatively from current path,
     // you should specify path prefix if you want to load them from different place
     resolve_path: (a:string)=>string;
+    pathPrefix: string;
 
     // * version - version of emulators build
     version: string;
