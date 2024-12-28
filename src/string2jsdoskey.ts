@@ -147,6 +147,5 @@ export function String2jsdosCode(command: string, caseSensitive = false, appendE
     if (appendEnter) {
         output.push([257])
     }
-    console.log(output)
     return output
 }
