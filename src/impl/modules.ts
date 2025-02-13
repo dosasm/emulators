@@ -102,14 +102,13 @@ export class WasmModulesImpl implements IWasmModules {
 
     public wasmSupported = false;
 
-    constructor(resolve_path: string|((p:string)=>string),
+    constructor(resolvePath: string|((p:string)=>string),
         wdosboxJs: string,
         wdosboxxJs: string) {
-        
-        if (typeof resolve_path =="string"){
-            this.resolve_path=a=>resolve_path+"/"+a;  
-        }else{
-            this.resolve_path = resolve_path;
+        if (typeof resolvePath =="string") {
+            this.resolve_path=(a)=>resolvePath+"/"+a;
+        } else {
+            this.resolve_path = resolvePath;
         }
         this.wdosboxJs = wdosboxJs;
         this.wdosboxxJs = wdosboxxJs;

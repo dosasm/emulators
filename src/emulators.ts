@@ -169,12 +169,12 @@ if (typeof window !== "undefined") {
     (global as any).emulators = emulatorsImpl;
 }
 
-import {String2jsdosCode,HtmlKeyCode2jsdos} from "./string2jsdoskey";
-import {Build} from "./build";
-import {Keys} from "./keys";
+import { String2jsdosCode, HtmlKeyCode2jsdos } from "./string2jsdoskey";
+import { Build } from "./build";
+import { Keys } from "./keys";
 
-export function get_emulators():Emulators{
-    return emulatorsImpl
+export function getEmulators():Emulators {
+    return emulatorsImpl;
 }
 
 export const utils = {
@@ -182,4 +182,4 @@ export const utils = {
     HtmlKeyCode2jsdos,
     Build,
     Keys,
-}
+};

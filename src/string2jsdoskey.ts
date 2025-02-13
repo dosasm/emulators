@@ -1,7 +1,7 @@
-/// key code in jsdos https://github.com/caiiiycuk/emulators/ at src/keys.ts
-/// key code in html https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/code
+// / key code in jsdos https://github.com/caiiiycuk/emulators/ at src/keys.ts
+// / key code in html https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/code
 const maps: [string, number, string | undefined, string | undefined, string | undefined][] = [
-    //keyname in jsdos, keycode in jsdos, keycode in html
+    // keyname in jsdos, keycode in jsdos, keycode in html
     ["KBD_NONE", 0, undefined, undefined, undefined],
     ["KBD_0", 48, "Digit0", "0", undefined],
     ["KBD_1", 49, "Digit1", "1", undefined],
@@ -112,40 +112,40 @@ const maps: [string, number, string | undefined, string | undefined, string | un
     ["KBD_kpminus", 333, "NumpadSubtract", "-", undefined],
     ["KBD_kpplus", 334, "NumpadPlus", "+", undefined],
     ["KBD_kpenter", 335, "NumpadEnter", undefined, undefined],
-]
+];
 
 
 export function HtmlKeyCode2jsdos(press: string): number | undefined {
     for (const m of maps) {
         if (m[2] == press) {
-            return m[1]
+            return m[1];
         }
     }
-    return undefined
+    return undefined;
 }
 
 function charCode2jsdosCode(code: number): number[] {
     for (const m of maps) {
         if (m[3]?.charCodeAt(0) == code) {
-            return [m[1]]
+            return [m[1]];
         }
         if (m[4]?.charCodeAt(0) == code) {
-            return [340, m[1]]
+            return [340, m[1]];
         }
     }
-    return []
+    return [];
 }
 
 export function String2jsdosCode(command: string, caseSensitive = false, appendEnter = true): number[][] {
     const output: number[][] = [];
-    let isShifted = false;
+    // const isShifted = false;
     for (let i = 0; i < command.length; i++) {
-        const code = command.charCodeAt(i)
-        const jsdos = charCode2jsdosCode(code)
-        output.push(jsdos)
+        const code = command.charCodeAt(i);
+        const jsdos = charCode2jsdosCode(code);
+        output.push(jsdos);
     }
     if (appendEnter) {
-        output.push([257])
+        output.push([257]);
     }
-    return output
+    return output;
 }
