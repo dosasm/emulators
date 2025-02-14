@@ -4,6 +4,8 @@
     "compilerOptions": {
         "target": "esnext",
         "outDir": "build",
+        "declaration": true,
+        "sourceMap": true,
         "allowJs": false,
         "skipLibCheck": true,
         "esModuleInterop": true,

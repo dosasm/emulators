@@ -85,5 +85,8 @@ fi
 # 激活 Emscripten 环境并构建生产版本
 yarn run gulp production
 
+
+yarn mocha test/nodejs/main.js
+
 # 压缩发布文件
 zip -9r release.zip dist/*

@@ -173,7 +173,10 @@ import { String2jsdosCode, HtmlKeyCode2jsdos } from "./string2jsdoskey";
 import { Build } from "./build";
 import { Keys } from "./keys";
 
-export function getEmulators():Emulators {
+export function getEmulators(pathPrefix:string|undefined):Emulators {
+    if (typeof pathPrefix=="string"){
+        emulatorsImpl.pathPrefix=pathPrefix;
+    }
     return emulatorsImpl;
 }
 
