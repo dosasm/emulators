@@ -174,7 +174,7 @@ import { Build } from "./build";
 import { Keys } from "./keys";
 
 export function getEmulators(pathPrefix:string|undefined):Emulators {
-    if (typeof pathPrefix=="string"){
+    if (typeof pathPrefix=="string") {
         emulatorsImpl.pathPrefix=pathPrefix;
     }
     return emulatorsImpl;

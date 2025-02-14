@@ -27,5 +27,7 @@ async function makeBuild(...targets: string[]) {
 }
 
 async function emcmake(listsPath: string) {
-    await execute("emcmake", "cmake", "-GNinja", "-DCMAKE_BUILD_TYPE=Release", listsPath);
+    const type="Release";
+    // const type="Debug";
+    await execute("emcmake", "cmake", "-GNinja", "-DCMAKE_BUILD_TYPE="+type, listsPath);
 }

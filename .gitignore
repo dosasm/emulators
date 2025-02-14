@@ -42,7 +42,6 @@ validation-report.json
 # Folders to ignore
 node_modules
 .buildconfig
-.vscode
 buildconfig
 cmake-build*
 travis-build

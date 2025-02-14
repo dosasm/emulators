@@ -4,7 +4,9 @@
 NODE_VERSION="18.x"
 EMSDK_VERSION="3.1.68"
 BINARYEN_VERSION="version_119_e"
-PROJECT_FOLDER="$(dirname $0)/../../"
+PROJECT_FOLDER="$(dirname $0)/../"
+cd $PROJECT_FOLDER
+PROJECT_FOLDER=$(pwd)
 
 # check or install emsdk
 if [ -z "$EMSDK" ]; then
@@ -82,11 +84,21 @@ else
 fi
 
 
-# 激活 Emscripten 环境并构建生产版本
+rm -rf dist
+rm -rf build
+
+# option1 original build
 yarn run gulp production
 
+# option2 build with shell for better understanding
+# PROJECT_FOLDER=$(pwd)
+emcmake cmake -GNinja -DCMAKE_BUILD_TYPE=Release $PROJECT_FOLDER
+ninja -j2 wlibzip
+ninja -j2 wdosbox
+ninja -j2 wdosbox-x
+yarn tsc --declaration "src/emulators.ts"  --outDir "dist/out"
 
 yarn mocha test/nodejs/main.js
 
 # 压缩发布文件
-zip -9r release.zip dist/*
+yarn pack

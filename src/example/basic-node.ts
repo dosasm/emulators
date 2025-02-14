@@ -1,13 +1,15 @@
-import path from "path"
-import { getEmulators, utils } from "../emulators"
+import path from "path";
+import { getEmulators, utils } from "../emulators";
+
+const project=path.resolve(__dirname,"..","..","..")
 
 const pathPrefix={
-    debug:path.resolve(__dirname,"..","..","Debug"),
-    release:path.resolve(__dirname,"..","..","Release")
-}
-const emu=getEmulators(pathPrefix.debug)
+    production:path.resolve(project,"dist"),
+    product:path.resolve(project,"build/wasm"),
+};
+const emu=getEmulators(pathPrefix.product);
 
-const TEST_STRING="XDRGS"
+const TEST_STRING="XDRGS";
 const config={
     dosboxConf: `[autoexec]
 echo ${TEST_STRING}
@@ -17,18 +19,20 @@ echo ${TEST_STRING}
     },
 };
 
-async function main(){
+async function main() {
     const ci=await emu.dosboxNode(config);
     let stdout="";
-    ci.events().onStdout(data=>{stdout+=data;console.log(data)})
-    for (const code of utils.String2jsdosCode("exit")){
-        await new Promise(resolve=>setTimeout(resolve,500))
-        ci.simulateKeyPress(...code)
+    ci.events().onStdout((data)=>{
+        stdout+=data; console.log(data);
+    });
+    for (const code of utils.String2jsdosCode("exit")) {
+        await new Promise((resolve)=>setTimeout(resolve, 500));
+        ci.simulateKeyPress(...code);
     }
-    console.log("============")
-    await new Promise(resolve=>setTimeout(resolve,2000))
-    await ci.exit()
-    await new Promise(resolve=>setTimeout(resolve,2000))
+    console.log("============");
+    await new Promise((resolve)=>setTimeout(resolve, 2000));
+    await ci.exit();
+    await new Promise((resolve)=>setTimeout(resolve, 2000));
 }
 
-main()
+main();

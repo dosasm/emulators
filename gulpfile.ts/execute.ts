@@ -11,7 +11,6 @@ export function executeQuiet(file: string, ...args: string[]): Promise<string> {
 
 function executeImpl(file: string, nolog: boolean, ...args: string[]): Promise<string> {
     return new Promise<string>((resolve) => {
-        log("execute", file, ...args);
         if (!nolog) {
             log("execute", file, ...args);
         }

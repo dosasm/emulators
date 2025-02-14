@@ -1,6 +1,6 @@
 {
     "name": "emulators",
-    "version": "8.3.3-dosasm4",
+    "version": "8.3.3-dosasm5",
     "description": "Emulators (dos) with standartized API",
     "main": "dist/out/emulators.js",
     "types": "dist/out/emulators.d.ts",
