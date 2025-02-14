@@ -1,11 +1,11 @@
-const path=require("path")
+import path from "path"
+import { getEmulators, utils } from "../emulators"
 
-const { getEmulators,utils } =require("../../build/src/emulators")
-const emu=getEmulators()
-// emu.pathPrefix=path.resolve(__dirname,"..","..","dist")
-// emu.pathPrefix=path.resolve(__dirname,"..","..","build/wasm")
-emu.pathPrefix=path.resolve(__dirname,"..","..","build/Debug")
-
+const pathPrefix={
+    debug:path.resolve(__dirname,"..","..","Debug"),
+    release:path.resolve(__dirname,"..","..","Release")
+}
+const emu=getEmulators(pathPrefix.debug)
 
 const TEST_STRING="XDRGS"
 const config={
@@ -25,8 +25,10 @@ async function main(){
         await new Promise(resolve=>setTimeout(resolve,500))
         ci.simulateKeyPress(...code)
     }
+    console.log("============")
     await new Promise(resolve=>setTimeout(resolve,2000))
     await ci.exit()
+    await new Promise(resolve=>setTimeout(resolve,2000))
 }
 
 main()
