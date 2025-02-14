@@ -32,7 +32,7 @@ describe('Basic emulator test', function () {
         ci.events().onStdout(data=>{stdout+=data})
         await new Promise(resolve=>setTimeout(resolve,1000))
         assert.ok(stdout.includes(TEST_STRING),"stdout:"+stdout);
-        utils.String2jsdosCode("exit").forEach(code=>ci.simulateKeyPress(...code))
+        utils.string2jsdosKey("exit").forEach(code=>ci.simulateKeyPress(...code))
         assert.ok(true);
     })
 

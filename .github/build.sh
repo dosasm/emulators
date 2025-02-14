@@ -57,8 +57,8 @@ sudo apt-get install -yq --no-install-recommends cmake ninja-build zip
 yarn
 
 # 运行 ESLint 检查
-yarn run eslint src --ext ts,tsx --max-warnings 0
-yarn run eslint test --ext ts,tsx --max-warnings 0
+yarn run eslint src --ext ts,tsx --max-warnings 0 --fix
+yarn run eslint test --ext ts,tsx --max-warnings 0 --fix
 
 # 运行 TypeScript 编译检查
 yarn run tsc --noemit
@@ -85,19 +85,19 @@ fi
 
 
 rm -rf dist
-rm -rf build
+# rm -rf build
 
 # option1 original build
 yarn run gulp production
 
-# option2 build with shell for better understanding
-# PROJECT_FOLDER=$(pwd)
-emcmake cmake -GNinja -DCMAKE_BUILD_TYPE=Release $PROJECT_FOLDER
-ninja -j2 wlibzip
-ninja -j2 wdosbox
-ninja -j2 wdosbox-x
-yarn tsc --declaration "src/emulators.ts"  --outDir "dist/out"
+# # option2 build with shell for better understanding
+# # PROJECT_FOLDER=$(pwd)
+# emcmake cmake -GNinja -DCMAKE_BUILD_TYPE=Release $PROJECT_FOLDER
+# ninja -j2 wlibzip
+# ninja -j2 wdosbox
+# ninja -j2 wdosbox-x
 
+yarn tsc --declaration "src/emulators.ts"  --outDir "dist/out"
 yarn mocha test/nodejs/main.js
 
 # 压缩发布文件

@@ -1,11 +1,11 @@
 import path from "path";
 import { getEmulators, utils } from "../emulators";
 
-const project=path.resolve(__dirname,"..","..","..")
+const project=path.resolve(__dirname, "..", "..", "..");
 
 const pathPrefix={
-    production:path.resolve(project,"dist"),
-    product:path.resolve(project,"build/wasm"),
+    production: path.resolve(project, "dist"),
+    product: path.resolve(project, "build/wasm"),
 };
 const emu=getEmulators(pathPrefix.product);
 
@@ -25,7 +25,7 @@ async function main() {
     ci.events().onStdout((data)=>{
         stdout+=data; console.log(data);
     });
-    for (const code of utils.String2jsdosCode("exit")) {
+    for (const code of utils.string2jsdosKey("exit")) {
         await new Promise((resolve)=>setTimeout(resolve, 500));
         ci.simulateKeyPress(...code);
     }

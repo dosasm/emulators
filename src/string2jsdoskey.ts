@@ -115,7 +115,7 @@ const maps: [string, number, string | undefined, string | undefined, string | un
 ];
 
 
-export function HtmlKeyCode2jsdos(press: string): number | undefined {
+export function htmlKey2jsdos(press: string): number | undefined {
     for (const m of maps) {
         if (m[2] == press) {
             return m[1];
@@ -136,7 +136,7 @@ function charCode2jsdosCode(code: number): number[] {
     return [];
 }
 
-export function String2jsdosCode(command: string, caseSensitive = false, appendEnter = true): number[][] {
+export function string2jsdosKey(command: string, caseSensitive = false, appendEnter = true): number[][] {
     const output: number[][] = [];
     // const isShifted = false;
     for (let i = 0; i < command.length; i++) {
