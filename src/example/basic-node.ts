@@ -1,5 +1,6 @@
 import path from "path";
 import { getEmulators, utils } from "../emulators";
+import { Shell } from "../utils/shell";
 
 const project=path.resolve(__dirname, "..", "..", "..");
 
@@ -7,7 +8,7 @@ const pathPrefix={
     production: path.resolve(project, "dist"),
     product: path.resolve(project, "build/wasm"),
 };
-const emu=getEmulators(pathPrefix.product);
+const emu=getEmulators(pathPrefix.production);
 
 const TEST_STRING="XDRGS";
 const config={
@@ -20,16 +21,23 @@ echo ${TEST_STRING}
 };
 
 async function main() {
-    const ci=await emu.dosboxNode(config);
+    const ci=await emu.dosboxXNode(config);
     let stdout="";
-    ci.events().onStdout((data)=>{
-        stdout+=data; console.log(data);
-    });
-    for (const code of utils.string2jsdosKey("exit")) {
-        await new Promise((resolve)=>setTimeout(resolve, 500));
-        ci.simulateKeyPress(...code);
+    // ci.events().onStdout((data)=>{
+    //     stdout+=data; console.log(data);
+    // });
+    // ci.events().onMessage(console.log)
+
+    await new Promise((resolve)=>setTimeout(resolve, 2000));
+    const cmds=["echo hello nodejs","echo nice to meet you"]
+    const shell=new Shell(ci)
+    for (const cmd of cmds){
+        await new Promise((resolve)=>setTimeout(resolve, 100));
+        console.log("exec command",cmd)
+        const out=await shell.exec(cmd)
+        console.log("exec result:",out);
     }
-    console.log("============");
+    
     await new Promise((resolve)=>setTimeout(resolve, 2000));
     await ci.exit();
     await new Promise((resolve)=>setTimeout(resolve, 2000));

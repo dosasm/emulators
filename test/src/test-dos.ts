@@ -9,7 +9,7 @@ import emulatorsImpl from "../../src/impl/emulators-impl";
 
 import { httpRequest } from "../../src/http";
 
-import { Keys } from "../../src/keys";
+import { Keys } from "../../src/utils/keys";
 import { makeLibZip } from "./libzip";
 import { Build } from "../../src/build";
 import emulators from "../../src/impl/emulators-impl";
