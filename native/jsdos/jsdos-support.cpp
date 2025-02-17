@@ -64,7 +64,7 @@ void jsdos::cout(const char* data, int amount) {
         line += next;
       }
 
-      if (next == '\n') {
+      if (next == '\n' || next == '>') {
         client_stdout(line.c_str(), line.length());
         line.clear();
       }

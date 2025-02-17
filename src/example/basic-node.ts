@@ -23,10 +23,9 @@ echo ${TEST_STRING}
 async function main() {
     const ci=await emu.dosboxXNode(config);
     let stdout="";
-    // ci.events().onStdout((data)=>{
-    //     stdout+=data; console.log(data);
-    // });
-    // ci.events().onMessage(console.log)
+    ci.events().onStdout((data)=>{
+        stdout+=data; console.log(data);
+    });
 
     await new Promise((resolve)=>setTimeout(resolve, 2000));
     const cmds=["echo hello nodejs","echo nice to meet you"]
@@ -41,6 +40,7 @@ async function main() {
     await new Promise((resolve)=>setTimeout(resolve, 2000));
     await ci.exit();
     await new Promise((resolve)=>setTimeout(resolve, 2000));
+    console.log(stdout)
 }
 
 main();
