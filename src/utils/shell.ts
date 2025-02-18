@@ -1,38 +1,41 @@
 import { string2jsdosKey } from "./string2jsdoskey"
 import { CommandInterface } from "../emulators"
 
-function sleep(ms:number){
+export function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export class Shell {
-    to_listen:{resolve:(stdout:string)=>void,cmd:string,sended?:number,resolved?:boolean}[] = []
-    stdout:string[]=[]
+    running: { cmd: string, resolver: ((out: string) => void), idx: number } | undefined = undefined
+    stdout: string[] = []
     constructor(public ci: CommandInterface) {
         ci.events().onStdout(data => {
             this.stdout.push(data)
-            for(const l of this.to_listen){
-                if(l.resolved) continue
-                if(l.sended===undefined)l.sended=this.stdout.length
-                if (data.endsWith("\\>")) {
-                    let out=this.stdout.slice(l.sended).join("");
-                    l.resolve(out)
-                    l.resolved=true
-                }
+            if (data.endsWith("\\>") && this.running) {
+                let out = this.stdout.slice(this.running.idx).join("");
+                this.running.resolver(out)
             }
         })
     }
 
-    wait_stdout(cmd: string) {
-        return new Promise((resolve, reject) => {
-            this.to_listen.push({resolve,cmd,sended:this.stdout.length})
-        })
+    public get is_prompt() {
+        if(this.stdout.length==0){
+            return false
+        }
+        return this.stdout[this.stdout.length - 1].endsWith("\\>")
     }
 
-    async exec(cmd: string,wait1=500,wait2=100) {
-        let out = this.wait_stdout(cmd)
+    async exec(cmd: string, wait1 = 500, wait2 = 100, timeout = 10000) {
         await sleep(wait1)
-        for (const code of string2jsdosKey(cmd + "\n")) {
+        const out = new Promise((resolve, reject) => {
+            this.running = {
+                cmd, resolver: resolve, idx: this.stdout.length
+            }
+            setTimeout(() => {
+                reject(cmd + " timeout")
+            }, timeout);
+        })
+        for (const code of string2jsdosKey(cmd, false, true)) {
             this.ci.simulateKeyPress(...code);
             await sleep(wait2)
         }

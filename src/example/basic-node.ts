@@ -27,20 +27,25 @@ async function main() {
         stdout+=data; console.log(data);
     });
 
-    await new Promise((resolve)=>setTimeout(resolve, 2000));
-    const cmds=["echo hello nodejs","echo nice to meet you"]
+
+    
+    const cmds=["mount c .","c:","echo ~!@#$%^&*()_+","echo 1234567890-="]
     const shell=new Shell(ci)
+    while(!shell.is_prompt){
+        await utils.sleep(200)
+    }
     for (const cmd of cmds){
-        await new Promise((resolve)=>setTimeout(resolve, 100));
+        await utils.sleep(200)
         console.log("exec command",cmd)
         const out=await shell.exec(cmd)
         console.log("exec result:",out);
     }
     
-    await new Promise((resolve)=>setTimeout(resolve, 2000));
+    await utils.sleep(300)
     await ci.exit();
-    await new Promise((resolve)=>setTimeout(resolve, 2000));
+    
     console.log(stdout)
+    process.exit()
 }
 
 main();
