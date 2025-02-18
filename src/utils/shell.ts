@@ -25,6 +25,16 @@ export class Shell {
         return this.stdout[this.stdout.length - 1].endsWith("\\>")
     }
 
+    /**
+     * execute one cmd in the JSBox
+     * command are send via key event so the this function may not work as expected 
+     * for we do not check the status of JSBox
+     * @param cmd 
+     * @param wait1 
+     * @param wait2 
+     * @param timeout 
+     * @returns 
+     */
     async exec(cmd: string, wait1 = 500, wait2 = 100, timeout = 10000) {
         await sleep(wait1)
         const out = new Promise((resolve, reject) => {

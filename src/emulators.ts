@@ -169,7 +169,7 @@ if (typeof window !== "undefined") {
     (global as any).emulators = emulatorsImpl;
 }
 
-export  { utils} from './utils/main'
+export * as utils from './utils/main'
 
 export function getEmulators(pathPrefix:string|undefined):Emulators {
     if (typeof pathPrefix=="string") {

@@ -1,11 +1,4 @@
-import {string2jsdosKey,htmlKey2jsdos} from "./string2jsdoskey"
-import { Keys } from "./keys";
-import {Shell,sleep} from "./shell"
-
-
-export const utils={
-    string2jsdosKey,htmlKey2jsdos,
-    Keys,
-    Shell,
-    sleep
-}
+export {string2jsdosKey,htmlKey2jsdos} from "./string2jsdoskey"
+export { Keys } from "./keys";
+export {sleep} from "./shell"
+export {Shell} from "./shell"
