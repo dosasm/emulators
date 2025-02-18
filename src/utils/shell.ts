@@ -11,7 +11,7 @@ export class Shell {
     constructor(public ci: CommandInterface) {
         ci.events().onStdout(data => {
             this.stdout.push(data)
-            if (data.endsWith("\\>") && this.running) {
+            if (data.endsWith(">") && this.running) {
                 let out = this.stdout.slice(this.running.idx).join("");
                 this.running.resolver(out)
             }
@@ -22,7 +22,7 @@ export class Shell {
         if(this.stdout.length==0){
             return false
         }
-        return this.stdout[this.stdout.length - 1].endsWith("\\>")
+        return this.stdout[this.stdout.length - 1].endsWith(">")
     }
 
     /**
