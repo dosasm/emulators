@@ -5,15 +5,22 @@ export function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+type RUNNING={
+    cmd: string, 
+    resolve: ((out: string) => void), 
+    reject: ((out: string) => void), 
+    idx: number
+}
+
 export class Shell {
-    running: { cmd: string, resolver: ((out: string) => void), idx: number } | undefined = undefined
+    running: RUNNING| undefined = undefined
     stdout: string[] = []
     constructor(public ci: CommandInterface) {
         ci.events().onStdout(data => {
             this.stdout.push(data)
             if (data.endsWith(">") && this.running) {
                 let out = this.stdout.slice(this.running.idx).join("");
-                this.running.resolver(out)
+                this.running.resolve(out)
             }
         })
     }
@@ -36,10 +43,14 @@ export class Shell {
      * @returns 
      */
     async exec(cmd: string, wait1 = 500, wait2 = 100, timeout = 10000) {
+        if (this.running){
+            this.running.reject("another cmd sended")
+        }
         await sleep(wait1)
         const out = new Promise((resolve, reject) => {
             this.running = {
-                cmd, resolver: resolve, idx: this.stdout.length
+                cmd, resolve, reject,
+                idx: this.stdout.length
             }
             setTimeout(() => {
                 reject(cmd + " timeout")
