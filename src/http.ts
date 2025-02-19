@@ -6,11 +6,33 @@ export interface XhrOptions {
 }
 
 export const httpRequest = XhrRequest;
+export type GetBlob=typeof get_blob;
+export const getBlobHook:GetBlob[]=[];
 
+export async function get_blob(workerUrl:string):Promise<Blob>{
+    for(const h of getBlobHook){
+        let r=await h(workerUrl);
+        if(r) return r
+    }
+    const response = await fetch(workerUrl);
+    if (response.status !== 200) {
+        throw new Error("Unable to download '" + workerUrl + "' (" +
+            response.status + "): " + response.statusText);
+    }
+    return await response.blob()
+}
+
+
+export type XhrRequestHook=typeof XhrRequest;
+export const xhrRequestHooks:XhrRequestHook[]=[];
 // # XhrRequest
 // `XhrRequest` is small wrapper over XMLHttpRequest, that provides some
 // handy methods
-function XhrRequest(url: string, options: XhrOptions): Promise<string | ArrayBuffer> {
+async function XhrRequest(url: string, options: XhrOptions): Promise<string | ArrayBuffer> {
+    for(const h of xhrRequestHooks){
+        let r=await h(url,options);
+        if(r) return r
+    }
     return new Promise<string | ArrayBuffer>((resolve, reject) => {
         new Xhr(url, {
             ...options,
@@ -21,6 +43,7 @@ function XhrRequest(url: string, options: XhrOptions): Promise<string | ArrayBuf
         });
     });
 }
+
 
 // private implementation
 interface XhrOptionsInternal extends XhrOptions {

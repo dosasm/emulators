@@ -169,7 +169,7 @@ function loadWasmModuleNode(url: string,
         return host.globals.compiled[moduleName];
     }
 
-    const emModule = require(url);
+    const emModule = eval("require("+url+")");
     const compiledModulePromise = Promise.resolve(new CompiledNodeModule(emModule));
     if (moduleName) {
         host.globals.compiled[moduleName] = compiledModulePromise;

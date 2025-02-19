@@ -2,18 +2,16 @@ import { WasmModule } from "../../../impl/modules";
 import { TransportLayer, MessageHandler, ClientMessage } from "../../../protocol/protocol";
 import { MessagesQueue } from "../../../protocol/messages-queue";
 
+import {get_blob} from "../../../http";
+
 export async function dosWorker(workerUrl: string,
                                 wasmModule: WasmModule,
                                 sessionId: string): Promise<TransportLayer> {
     const messagesQueue = new MessagesQueue();
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
 
-    const response = await fetch(workerUrl);
-    if (response.status !== 200) {
-        throw new Error("Unable to download '" + workerUrl + "' (" +
-            response.status + "): " + response.statusText);
-    }
-    const localUrl = URL.createObjectURL(await response.blob());
+    const b=await get_blob(workerUrl);
+    const localUrl = URL.createObjectURL(b);
     const worker = new Worker(localUrl);
     worker.onerror = (e) => {
         handler("ws-err", { type: e.type, filename: e.filename, message: e.message });

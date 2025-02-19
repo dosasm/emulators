@@ -170,6 +170,10 @@ if (typeof window !== "undefined") {
 }
 
 export * as utils from './utils/main'
+import LibZip from "./libzip/libzip"
+import * as http from "./http"
+export {LibZip,http}
+
 
 export function getEmulators(pathPrefix:string|undefined):Emulators {
     if (typeof pathPrefix=="string") {
