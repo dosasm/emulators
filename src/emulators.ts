@@ -163,11 +163,8 @@ export interface CommandInterfaceEvents {
     onNetworkDisconnected: (consumer: (networkType: NetworkType) => void) => void;
 }
 
-if (typeof window !== "undefined") {
-    (window as any).emulators = emulatorsImpl;
-} if (typeof global !== "undefined") {
-    (global as any).emulators = emulatorsImpl;
-}
+
+(globalThis as any).emulators = emulatorsImpl;
 
 export * as utils from './utils/main'
 import LibZip from "./libzip/libzip"

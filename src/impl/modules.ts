@@ -22,7 +22,7 @@ class Host {
     public wasmSupported = false;
     public globals: Globals;
     constructor() {
-        this.globals = typeof window === "undefined" ? {} : window as any;
+        this.globals = globalThis as any;
         if (!this.globals.module) {
             this.globals.module = {};
         }
@@ -216,7 +216,7 @@ function loadWasmModuleBrowser(url: string,
             return; // no-return
         };
 
-        eval.call(window, script as string);
+        eval.call(globalThis, script as string);
         host.globals.exports[moduleName] = host.globals.module.exports;
 
         return new CompiledBrowserModule(wasmModule,
