@@ -2,7 +2,7 @@ import { WasmModule } from "../../../impl/modules";
 import { TransportLayer, MessageHandler, ClientMessage } from "../../../protocol/protocol";
 import { MessagesQueue } from "../../../protocol/messages-queue";
 
-import {get_blob} from "../../../http";
+import {platform} from "../../../impl/platform";
 
 export async function dosWorker(workerUrl: string,
                                 wasmModule: WasmModule,
@@ -10,9 +10,7 @@ export async function dosWorker(workerUrl: string,
     const messagesQueue = new MessagesQueue();
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
 
-    const b=await get_blob(workerUrl);
-    const localUrl = URL.createObjectURL(b);
-    const worker = new Worker(localUrl);
+    const worker = await platform.current.createWorker(workerUrl);
     worker.onerror = (e) => {
         handler("ws-err", { type: e.type, filename: e.filename, message: e.message });
     };
@@ -41,7 +39,6 @@ export async function dosWorker(workerUrl: string,
             messagesQueue.sendTo(handler);
         },
         exit: () => {
-            URL.revokeObjectURL(localUrl);
             worker.terminate();
         },
     };
