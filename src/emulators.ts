@@ -167,9 +167,7 @@ export interface CommandInterfaceEvents {
 (globalThis as any).emulators = emulatorsImpl;
 
 export * as utils from './utils/main'
-import LibZip from "./libzip/libzip"
-import * as http from "./http"
-export {LibZip,http}
+export {XhrOptions,XhrRequest} from "./impl/http"
 export {platform,Platform,NodeJs,Browser} from "./impl/platform"
 
 export function getEmulators(pathPrefix:string|undefined):Emulators {

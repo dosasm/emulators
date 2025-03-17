@@ -26,7 +26,6 @@ dev.js
 /dist/test
 cmake-build-*
 native
-src
 gulpfile.ts
 .clang-format
 temp.jsdos

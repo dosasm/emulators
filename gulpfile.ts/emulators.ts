@@ -15,7 +15,6 @@ import replace from "gulp-replace";
 const tsify = require("tsify");
 // eslint-disable-next-line
 const footer = require("gulp-footer");
-const header = require("gulp-header");
 
 function clean() {
     return del(["dist/emulators*",
@@ -81,7 +80,6 @@ if (isNode) {
 
 function dosboxJs() {
     return src("dist/wdosbox.js")
-        .pipe(header(head))
         .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js")))
         .pipe(replace("@MODULE_NAME@", "WDOSBOX"))
         .pipe(dest("dist"));
@@ -89,7 +87,6 @@ function dosboxJs() {
 
 function dosboxxJs() {
     return src("dist/wdosbox-x.js")
-        .pipe(header(head))
         .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js")))
         .pipe(replace("@MODULE_NAME@", "WDOSBOXX"))
         .pipe(dest("dist"));
