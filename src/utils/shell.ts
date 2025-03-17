@@ -32,6 +32,20 @@ export class Shell {
         return this.stdout[this.stdout.length - 1].endsWith(">")
     }
 
+    public async wait_prompt(ms=200,max=100){
+        let count=0
+        while(!this.is_prompt){
+            if(this.stdout.length==0){
+                this.ci.simulateKeyPress(257)
+            }
+            await sleep(ms)
+            count++;
+            if(count>max){
+                break
+            }
+        }
+    }
+
     /**
      * execute one cmd in the JSBox
      * command are send via key event so the this function may not work as expected 

@@ -2,7 +2,7 @@ import {HttpRequest,XhrOptions,XhrRequest} from "./http"
 
 export interface Platform {
     name: string
-    createWorker(workerUrl: string): Promise<Worker> 
+    createWorker(workerUrl: string,onerror:(e:ErrorEvent)=>void,onmessage:(e:MessageEvent)=>void): Promise<Worker> 
     node_require(path:string):any
     httpRequest:HttpRequest
 }
@@ -13,10 +13,16 @@ export class NodeJs implements Platform {
     node_require(path: string) {
         return require(path)
     }
-    createWorker(workerUrl: string): Promise<Worker> {
-        throw new Error("not implemented")
-        // const worker_threads = require("worker_threads");
-        // return new worker_threads.Worker(workerUrl);
+    createWorker(workerUrl: string,onerror:(e:ErrorEvent)=>void,onmessage:(e:MessageEvent)=>void): Promise<Worker> {
+        const node_workder_threads=eval(`require("node:worker_threads")`)
+        const w=new node_workder_threads.Worker(workerUrl)
+        w.on('message', (message:any) => {
+            onmessage({data:message} as any)
+        });
+        w.on('error',(error:any)=>{
+            onerror({type:"node worker thread",filename:error.stack,message:error.message} as any)
+        })
+        return w
     }
 }
 
@@ -26,7 +32,7 @@ export class Browser implements Platform {
     node_require(path: string) {
         return require(path)
     }
-    async createWorker(workerUrl: string): Promise<Worker>{
+    async createWorker(workerUrl: string,onerror:(e:ErrorEvent)=>void,onmessage:(e:MessageEvent)=>void): Promise<Worker>{
         const response = await fetch(workerUrl);
         if (response.status !== 200) {
             throw new Error("Unable to download '" + workerUrl + "' (" +
@@ -35,6 +41,8 @@ export class Browser implements Platform {
         const b = await response.blob()
         const localUrl = URL.createObjectURL(b);
         const worker = new Worker(localUrl);
+        worker.onerror=onerror;
+        worker.onmessage=onmessage
         return worker
     }
 }

@@ -10,16 +10,18 @@ export async function dosWorker(workerUrl: string,
     const messagesQueue = new MessagesQueue();
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
 
-    const worker = await platform.current.createWorker(workerUrl);
-    worker.onerror = (e) => {
+    let onerror = (e:ErrorEvent) => {
         handler("ws-err", { type: e.type, filename: e.filename, message: e.message });
     };
-    worker.onmessage = (e) => {
+    let onmessage = (e:MessageEvent) => {
         const data = e.data;
         if (data?.name !== undefined) {
             handler(data.name, data.props);
         }
     };
+
+    const worker = await platform.current.createWorker(workerUrl,onerror,onmessage);
+    
 
     await wasmModule.instantiate({});
 

@@ -15,6 +15,7 @@ import replace from "gulp-replace";
 const tsify = require("tsify");
 // eslint-disable-next-line
 const footer = require("gulp-footer");
+const header = require("gulp-header");
 
 function clean() {
     return del(["dist/emulators*",
@@ -48,8 +49,39 @@ function js() {
         .pipe(dest("dist"));
 }
 
+const head=`
+
+const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+
+if (isNode) {
+    const { isMainThread } = require('node:worker_threads');
+    if (isMainThread) {
+        console.log("main")
+    }
+    else {
+        const { parentPort } = require('node:worker_threads');
+        var self = parentPort;
+        var worker=parentPort;
+        function importScripts(...args) {
+            console.log(args)
+        }
+        var onmessage=function (e){
+
+        }
+        parentPort.on('message', (message) => {
+            onmessage({data:message})
+            console.log('Received from main:', message);
+        });
+        function postMessage(msg){
+            parentPort.postMessage(msg);
+        }
+    }
+}
+`
+
 function dosboxJs() {
     return src("dist/wdosbox.js")
+        .pipe(header(head))
         .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js")))
         .pipe(replace("@MODULE_NAME@", "WDOSBOX"))
         .pipe(dest("dist"));
@@ -57,6 +89,7 @@ function dosboxJs() {
 
 function dosboxxJs() {
     return src("dist/wdosbox-x.js")
+        .pipe(header(head))
         .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js")))
         .pipe(replace("@MODULE_NAME@", "WDOSBOXX"))
         .pipe(dest("dist"));

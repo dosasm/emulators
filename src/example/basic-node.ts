@@ -21,7 +21,7 @@ echo ${TEST_STRING}
 };
 
 async function main() {
-    const ci=await emu.dosboxXNode(config);
+    const ci=await emu.dosboxWorker(config);
     let stdout="";
     ci.events().onStdout((data)=>{
         stdout+=data; console.log(data);
@@ -31,9 +31,7 @@ async function main() {
     
     const cmds=["mount c .","c:","echo ~!@#$%^&*()_+","echo 1234567890-="]
     const shell=new Shell(ci)
-    while(!shell.is_prompt){
-        await utils.sleep(200)
-    }
+    await shell.wait_prompt()
     for (const cmd of cmds){
         await utils.sleep(200)
         console.log("exec command",cmd)
