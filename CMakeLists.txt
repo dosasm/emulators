@@ -50,7 +50,10 @@ if(${EMSCRIPTEN})
 		"-sEXTRA_EXPORTED_RUNTIME_METHODS=['addRunDependency', 'removeRunDependency','FS', 'FS_createPath', 'FS_createPreloadedFile', \
 			'FS_createDataFile', 'lengthBytesUTF8', 'stringToUTF8', 'UTF16ToString', 'UTF8ToString', 'callMain', 'err']"
 		"-sEXPORTED_FUNCTIONS=['_main', '_malloc', '_free', '_abort']"
-		"-sERROR_ON_UNDEFINED_SYMBOLS=1")
+		"-sERROR_ON_UNDEFINED_SYMBOLS=1"
+		"--source-map-base http://localhost:8000/"  # 指定 Source Map 的基础 URL
+        "-g4"  # 生成详细的调试信息，包含 Source Map
+		)
 elseif(APPLE)
 	add_definitions(-DEMSCRIPTEN_KEEPALIVE=)
 	add_definitions(-DMACOSX)
