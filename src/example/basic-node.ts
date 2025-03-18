@@ -8,7 +8,7 @@ const pathPrefix={
     production: path.resolve(project, "dist"),
     product: path.resolve(project, "build/wasm"),
 };
-const emu=getEmulators(pathPrefix.production);
+const emu=getEmulators(pathPrefix.product);
 
 const TEST_STRING="XDRGS";
 const config={
@@ -21,7 +21,7 @@ echo ${TEST_STRING}
 };
 
 async function main() {
-    const ci=await emu.dosboxWorker(config);
+    const ci=await emu.dosboxDirect(config);
     let stdout="";
     ci.events().onStdout((data)=>{
         stdout+=data; console.log(data);
