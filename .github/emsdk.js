@@ -1,9 +1,24 @@
-const cp = require("child_process")
+const fs = require("fs")
 const os = require("os")
+const path=require("path")
 
-NODE_VERSION = "18.x"
-EMSDK_VERSION = "3.1.68"
-BINARYEN_VERSION = "version_119_e"
+const NODE_VERSION = "18.x"
+const EMSDK_VERSION = "3.1.68"
+const BINARYEN_VERSION = "version_119_e"
+
+const TMPDIR=path.resolve(".github/tmp/")
+
+function installSDK() {
+    const text=`
+cd ${TMPDIR}
+git clone --depth=1 https://github.com/emscripten-core/emsdk
+cd emsdk
+./emsdk install "${EMSDK_VERSION}"
+./emsdk activate --embedded  "${EMSDK_VERSION}"`
+    const out=path.join(TMPDIR,"emsdk.sh")
+    fs.writeFileSync(out,text)
+    return out
+}
 
 function getBinaryenFile() {
     const platform = os.platform();
@@ -37,24 +52,36 @@ function getBinaryenFile() {
 }
 
 function binaryen() {
-    return "https://github.com/caiiiycuk/binaryen-fwasm-exceptions/releases/download/" + getBinaryenFile()
+    return "https://github.com/caiiiycuk/binaryen-fwasm-exceptions/releases/download/"+BINARYEN_VERSION+"/" + getBinaryenFile()
+}
+
+function installBinaryen(EMSDK) {
+    const text=`
+cd ${TMPDIR}
+wget ${binaryen()}
+tar xfv ${getBinaryenFile()}
+cp -v binaryen-${BINARYEN_VERSION}/bin/wasm-opt ${EMSDK}/upstream/bin/wasm-opt
+cp -v binaryen-${BINARYEN_VERSION}/lib/libbinaryen.dylib ${EMSDK}/upstream/lib/libbinaryen.dylib
+`
+    const out=path.resolve(TMPDIR,"binaryen.sh");
+    fs.writeFileSync(out,text)
+    return out
 }
 
 function main() {
-    // console.log(process.argv)
-    if (process.argv.includes("opt")) {
-        const url = binaryen()
-        console.log(url)
-    } else {
-        if ("EMSDK" in process.env) {
-            console.log("installed at ", process.env["EMSDK"])
-            process.exit(0)
-        } else {
-            process.exit(1)
-        }
+    if (!fs.existsSync(TMPDIR))
+        fs.mkdirSync(TMPDIR,{recursive:true})
 
+    const EMSDK=process.env["EMSDK"]
+    const s1=installSDK()
+
+    if (!EMSDK) {
+        console.error("请设置 EMSDK 环境变量")
+        console.error("请运行 "+s1+" 脚本")
+        process.exit(1)
     }
-
+    const s2=installBinaryen(EMSDK)
+    console.log("请运行 "+s2+" 脚本")
 }
 
 main()
