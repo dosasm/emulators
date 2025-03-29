@@ -2,8 +2,15 @@
     "name": "emulators",
     "version": "8.3.3-dosasm2.3",
     "description": "Emulators (dos) with standartized API",
-    "main": "dist/out/emulators.js",
-    "types": "dist/out/emulators.d.ts",
+    "exports": {
+        ".": {
+            "node": "./build/src/emulators-nodejs.js",
+            "browser": "./build/src/emulators-browser.js",
+            "default": "./build/src/emulators-browser.js"
+        }
+    },
+    "main": "build/src/emulators-browser.js",
+    "types": "build/src/emulators-browser.d.ts",
     "browserslist": [
         "defaults",
         "not ie 11",
@@ -70,6 +77,11 @@
         "tsify": "^5.0.4",
         "typescript": "^5.0.4",
         "vinyl-buffer": "^1.0.1",
-        "vinyl-source-stream": "^2.0.0"
+        "vinyl-source-stream": "^2.0.0",
+        "webpack-cli": "^6.0.1"
+    },
+    "dependencies": {
+        "ts-loader": "^9.5.2",
+        "webpack": "^5.98.0"
     }
 }

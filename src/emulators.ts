@@ -163,12 +163,9 @@ export interface CommandInterfaceEvents {
     onNetworkDisconnected: (consumer: (networkType: NetworkType) => void) => void;
 }
 
-
-(globalThis as any).emulators = emulatorsImpl;
-
 export * as utils from './utils/main'
 export {XhrOptions,XhrRequest} from "./impl/http"
-export {platform,Platform,NodeJs,Browser} from "./impl/platform"
+export {platform,Platform} from "./impl/platform"
 
 export function getEmulators(pathPrefix:string|undefined):Emulators {
     if (typeof pathPrefix=="string") {

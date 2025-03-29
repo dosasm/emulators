@@ -1,6 +1,7 @@
 {
     "files": ["gulpfile.ts/index.ts",
-              "src/emulators.ts",
+              "src/emulators-browser.ts",
+              "src/emulators-nodejs.ts",
               "src/example/cli.ts",
               "src/example/basic-node.ts"
             ],

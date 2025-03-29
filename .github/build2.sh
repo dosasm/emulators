@@ -12,6 +12,8 @@ else
     exit 1
 fi
 
+source ./emsdk/emsdk_env.sh
+
 mkdir -p build/wasm
 cd build/wasm
 emcmake cmake -G "Ninja" ../..

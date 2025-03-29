@@ -1,5 +1,5 @@
 import path from "path";
-import { getEmulators, utils } from "../emulators";
+import { getEmulators, utils } from "../emulators-nodejs";
 import { Shell } from "../utils/shell";
 
 const project=path.resolve(__dirname, "..", "..", "..");
