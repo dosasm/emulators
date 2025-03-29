@@ -1,6 +1,7 @@
 {
     "name": "emulators",
     "version": "8.3.3-dosasm2.3",
+    "private": true,
     "description": "Emulators (dos) with standartized API",
     "exports": {
         ".": {
@@ -77,11 +78,9 @@
         "tsify": "^5.0.4",
         "typescript": "^5.0.4",
         "vinyl-buffer": "^1.0.1",
-        "vinyl-source-stream": "^2.0.0",
-        "webpack-cli": "^6.0.1"
+        "vinyl-source-stream": "^2.0.0"
     },
-    "dependencies": {
-        "ts-loader": "^9.5.2",
-        "webpack": "^5.98.0"
-    }
+    "workspaces": [
+        "packages/*"
+    ]
 }
