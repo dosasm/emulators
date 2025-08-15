@@ -3,8 +3,8 @@ const os = require("os")
 const path=require("path")
 
 const NODE_VERSION = "18.x"
-const EMSDK_VERSION = "3.1.68"
-const BINARYEN_VERSION = "version_119_e"
+const EMSDK_VERSION = "4.0.2"
+const BINARYEN_VERSION = "version_123_e"
 
 const TMPDIR=path.resolve(".github/tmp/")
 
