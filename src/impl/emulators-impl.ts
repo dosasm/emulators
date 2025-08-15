@@ -130,7 +130,9 @@ class EmulatorsImpl implements Emulators {
                         reject(err);
                     } else {
                         // can be called from ctor, without timeout can be undefined
-                        setTimeout(() => resolve(ci), 4);
+                        setTimeout(() => {
+                            resolve(ci)
+                        }, 4);
                     }
                 },
                 options || {},

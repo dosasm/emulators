@@ -1,4 +1,4 @@
-import { httpRequest } from "../http";
+import { platform } from "./platform";
 
 export interface WasmModule {
     instantiate: (module?: any) => Promise<any>;
@@ -22,7 +22,7 @@ class Host {
     public wasmSupported = false;
     public globals: Globals;
     constructor() {
-        this.globals = typeof window === "undefined" ? {} : window as any;
+        this.globals = globalThis as any;
         if (!this.globals.module) {
             this.globals.module = {};
         }
@@ -107,8 +107,10 @@ export class WasmModulesImpl implements IWasmModules {
         pathSuffix: string,
         wdosboxJs: string,
         wdosboxxJs: string) {
-        if (pathPrefix.length > 0 && pathPrefix[pathPrefix.length - 1] !== "/") {
-            pathPrefix += "/";
+        if (typeof resolvePath =="string") {
+            this.resolve_path=(a)=>resolvePath+"/"+a;
+        } else {
+            this.resolve_path = resolvePath;
         }
 
         this.pathPrefix = pathPrefix;
@@ -172,7 +174,7 @@ function loadWasmModuleNode(url: string,
         return host.globals.compiled[moduleName];
     }
 
-    const emModule = require(url);
+    const emModule = platform.current.node_require(url);
     const compiledModulePromise = Promise.resolve(new CompiledNodeModule(emModule));
     if (moduleName) {
         host.globals.compiled[moduleName] = compiledModulePromise;
@@ -205,7 +207,7 @@ function loadWasmModuleBrowser(url: string,
                 onprogress("Resolving DosBox (" + url + ")", total, loaded);
             },
         });
-        const scriptPromise = httpRequest(url, {
+        const scriptPromise = platform.current.httpRequest(url, {
             progress: (total, loaded) => {
                 onprogress("Resolving DosBox", total, loaded);
             },
@@ -219,7 +221,7 @@ function loadWasmModuleBrowser(url: string,
                 .then((instance) => receiveInstance(instance, wasmModule));
         };
 
-        eval.call(window, script as string);
+        eval.call(globalThis, script as string);
         host.globals.exports[moduleName] = host.globals.module.exports;
 
         return new CompiledBrowserModule(wasmModule,

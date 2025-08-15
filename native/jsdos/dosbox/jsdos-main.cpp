@@ -252,6 +252,8 @@ int jsdos_main(Config *config) {
     std::string config_file, config_path;
     Cross::GetPlatformConfigDir(config_path);
 
+    asyncify_sleep(1000);
+
     //First parse -userconf
     if (control->cmdline->FindExist("-userconf", true)) {
         config_file.clear();
@@ -386,6 +388,7 @@ int server_run() {
   jsdos::initAsyncify();
   CommandLine commandLine(0, nullptr);
   Config config(&commandLine);
+  LOG_MSG("------------------------------------------");
   auto code = jsdos_main(&config);
   jsdos::destroyAsyncify();
   return code;

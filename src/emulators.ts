@@ -40,6 +40,7 @@ export type PersistedSockdrives = {
 export interface Emulators {
     // * pathPrefix - by default emulators will load wasm modules relatively from current path,
     // you should specify path prefix if you want to load them from different place
+    resolve_path: (a:string)=>string;
     pathPrefix: string;
 
     // * pathSuffix - suffix fill be added to end of the each path
@@ -175,8 +176,14 @@ export interface CommandInterfaceEvents {
     onUnload: (consumer: () => Promise<void>) => void;
 }
 
-if (typeof window !== "undefined") {
-    (window as any).emulators = emulatorsImpl;
-} if (typeof global !== "undefined") {
-    (global as any).emulators = emulatorsImpl;
+export * as utils from './utils/main'
+export {XhrOptions,XhrRequest} from "./impl/http"
+export {platform,Platform} from "./impl/platform"
+
+export function getEmulators(pathPrefix:string|undefined):Emulators {
+    if (typeof pathPrefix=="string") {
+        emulatorsImpl.pathPrefix=pathPrefix;
+    }
+    return emulatorsImpl;
 }
+

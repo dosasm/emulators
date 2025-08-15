@@ -1,9 +1,14 @@
+*.tgz
+!test/audio-node.js 
+!test/webgl.js
+
 dreamlayers-em-dosbox-em-dosbox-svn-sdl2
 3rd-party
 .idea
 dist.zip
 js-dos-cpp
-build
+emsdk
+build/wasm/CMakeFiles/
 build-emterp
 .vscode
 cmake-build-debug
@@ -22,7 +27,6 @@ dev.js
 /dist/test
 cmake-build-*
 native
-src
 gulpfile.ts
 .clang-format
 temp.jsdos

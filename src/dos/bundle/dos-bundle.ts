@@ -3,7 +3,7 @@
 
 import LibZip from "../../libzip/libzip";
 
-import { httpRequest } from "../../http";
+import { platform } from "../../impl/platform";
 
 import { WasmModule } from "../../impl/modules";
 import { Build } from "../../build";
@@ -68,7 +68,7 @@ export default class DosBundle {
                 throw new Error("Only Zip is supported");
             }
 
-            const resource = httpRequest(source.url, {
+            const resource = platform.current.httpRequest(source.url, {
                 responseType: "arraybuffer",
             }).then((buffer: string | ArrayBuffer) => {
                 return {
