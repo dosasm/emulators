@@ -1,8 +1,11 @@
-# 构建 sockdrive
-cd native/sockdrive/js
-yarn
-yarn run webpack
-cd ../../..
+sudo apt-get -yqq update
+sudo apt-get install -yq --no-install-recommends cmake ninja-build zip
+
+
+source  ".github/tmp/emsdk/emsdk_env.sh"
+npm install -g yarn
+
+
 
 
 if node .github/emsdk.js; then
@@ -12,7 +15,7 @@ else
     exit 1
 fi
 
-source ./emsdk/emsdk_env.sh
+
 
 mkdir -p build/wasm
 cd build/wasm

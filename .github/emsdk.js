@@ -61,8 +61,8 @@ cd ${TMPDIR}
 wget ${binaryen()}
 tar xfv ${getBinaryenFile()}
 cp -v binaryen-${BINARYEN_VERSION}/bin/wasm-opt ${EMSDK}/upstream/bin/wasm-opt
-cp -v binaryen-${BINARYEN_VERSION}/lib/libbinaryen.dylib ${EMSDK}/upstream/lib/libbinaryen.dylib
 `
+// cp -v binaryen-${BINARYEN_VERSION}/lib/libbinaryen.dylib ${EMSDK}/upstream/lib/libbinaryen.dylib
     const out=path.resolve(TMPDIR,"binaryen.sh");
     fs.writeFileSync(out,text)
     return out
