@@ -107,11 +107,6 @@ export class WasmModulesImpl implements IWasmModules {
         pathSuffix: string,
         wdosboxJs: string,
         wdosboxxJs: string) {
-        if (typeof resolvePath =="string") {
-            this.resolve_path=(a)=>resolvePath+"/"+a;
-        } else {
-            this.resolve_path = resolvePath;
-        }
 
         this.pathPrefix = pathPrefix;
         this.pathSuffix = pathSuffix;
@@ -201,7 +196,7 @@ function loadWasmModuleBrowser(url: string,
 
         const indexOfJs = url.lastIndexOf(".js");
         const wasmUrl = url.substring(0, indexOfJs) + ".wasm" + url.substring(indexOfJs + 3);
-        const binaryPromise = httpRequest(wasmUrl, {
+        const binaryPromise = platform.current.httpRequest(wasmUrl, {
             responseType: "arraybuffer",
             progress: (total, loaded) => {
                 onprogress("Resolving DosBox (" + url + ")", total, loaded);

@@ -5,10 +5,10 @@ import { Shell } from "../utils/shell";
 const project=path.resolve(__dirname, "..", "..", "..");
 
 const pathPrefix={
-    production: path.resolve(project, "dist"),
-    product: path.resolve(project, "build/wasm"),
+    production: path.join(project, "dist"),
+    development: path.join(project, "build/wasm/"),
 };
-const emu=getEmulators(pathPrefix.product);
+const emu=getEmulators(pathPrefix.development);
 
 const TEST_STRING="XDRGS";
 const config={

@@ -21,6 +21,8 @@ export async function dosWorker(workerUrl: string,
         }
     };
 
+    const worker = await platform.current.createWorker(workerUrl,onerror,onmessage);
+
     const transportLayer: TransportLayer = {
         sessionId,
         sendMessageToServer: (name: ClientMessage,

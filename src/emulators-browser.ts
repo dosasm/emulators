@@ -4,6 +4,9 @@ import {Platform,platform} from "./impl/platform"
 import {HttpRequest,XhrOptions,XhrRequest} from "./impl/http"
 
 export class Browser implements Platform {
+    resolveJSpath(a: { prefix: string; js: string; suffix: string }): string {
+        throw new Error("Method not implemented.")
+    }
     name = "browser"
     httpRequest=XhrRequest
     node_require(path: string) {
