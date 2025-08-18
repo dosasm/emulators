@@ -13,6 +13,19 @@
             ],
             "sourceMaps": true,
             "program": "${workspaceFolder}/build/src/example/basic-node.js"
-        }
+        },
+        {
+          "name": "Mocha Test",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/mocha",
+          "args": [
+            "--timeout", "999999",
+            "--colors",
+            "${workspaceFolder}/build/src/test/shell.test.js"
+          ],
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen",
+        },
     ]
 }

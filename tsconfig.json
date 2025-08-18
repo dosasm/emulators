@@ -2,8 +2,11 @@
     "files": ["gulpfile.ts/index.ts",
               "src/emulators-browser.ts",
               "src/emulators-nodejs.ts",
-              "src/example/basic-node.ts"
+              "src/example/basic-node.ts",
             ],
+    "include":[
+      "src/test/*.ts",
+    ],
     "compilerOptions": {
         "target": "esnext",
         "outDir": "build",
