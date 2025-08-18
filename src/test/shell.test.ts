@@ -1,20 +1,11 @@
 import { expect } from 'chai';
 
-import path from "path";
-import { getEmulators, utils } from "../emulators-nodejs";
+import { getEmulators, utils, BUILTIN } from "../emulators-nodejs";
 import { Shell } from "../utils/shell";
 
-const project = path.resolve(__dirname, "..", "..", "..");
+const emu = getEmulators(BUILTIN.development);
 
-const pathPrefix = {
-  production: path.join(project, "dist"),
-  development: path.join(project, "build/wasm/"),
-};
-const emu = getEmulators(pathPrefix.development);
-
-
-
-async function run_emulator(autoexecString: string) {
+async function run_emulator(autoexecString: string, emulator = "dosbox") {
   const config = {
     dosboxConf: `[autoexec]
       mount c .
@@ -25,7 +16,16 @@ async function run_emulator(autoexecString: string) {
       version: "",
     },
   };
-  const ci = await emu.dosboxDirect(config);
+  let ci = undefined;
+  if (emulator === "dosbox") {
+    ci = await emu.dosboxDirect(config);
+  }
+  else if (emulator === "dosbox-x") {
+    ci = await emu.dosboxXDirect(config);
+  }
+  if (ci === undefined) {
+    throw new Error("")
+  }
   let stdout = "";
   ci.events().onStdout((data) => {
     stdout += data;
@@ -38,23 +38,23 @@ async function run_emulator(autoexecString: string) {
     }, 100);
   })
   await p;
-  return {stdout,ci}
+  return { stdout, ci }
 }
 
 
-describe('Shell', () => {
+describe('Shell dosbox', () => {
   describe('#stdout', () => {
     it('autoexec echo message', async () => {
       const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
-      const {ci,stdout}=await run_emulator(AUTOEXEC_TEST_STRING);
+      const { ci, stdout } = await run_emulator(AUTOEXEC_TEST_STRING);
       expect(stdout).to.include(AUTOEXEC_TEST_STRING)
       ci.exit()
     })
     it('shell echo message', async () => {
       const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
-      const {ci,stdout}=await run_emulator(AUTOEXEC_TEST_STRING);
+      const { ci, stdout } = await run_emulator(AUTOEXEC_TEST_STRING);
 
-      const cmds = Array.from({length: 3}, () => "echo " + Math.random().toFixed(3));
+      const cmds = Array.from({ length: 3 }, () => "echo " + Math.random().toFixed(3));
       const shell = new Shell(ci)
       await shell.wait_prompt()
       for (const cmd of cmds) {
@@ -68,3 +68,29 @@ describe('Shell', () => {
   });
 });
 
+
+describe('Shell dosbox-x', () => {
+  describe('#stdout', () => {
+    it('autoexec echo message', async () => {
+      const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
+      const { ci, stdout } = await run_emulator(AUTOEXEC_TEST_STRING, "dosbox-x");
+      expect(stdout).to.include(AUTOEXEC_TEST_STRING)
+      ci.exit()
+    })
+    it('shell echo message', async () => {
+      const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
+      const { ci, stdout } = await run_emulator(AUTOEXEC_TEST_STRING, "dosbox-x");
+
+      const cmds = Array.from({ length: 3 }, () => "echo " + Math.random().toFixed(3));
+      const shell = new Shell(ci)
+      await shell.wait_prompt()
+      for (const cmd of cmds) {
+        await utils.sleep(100)
+        console.log(cmd)
+        const out = await shell.exec(cmd)
+        expect(out).to.include(cmd)
+      }
+      ci.exit()
+    });
+  });
+});

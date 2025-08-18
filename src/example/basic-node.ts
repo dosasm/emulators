@@ -1,19 +1,11 @@
-import path from "path";
-import { getEmulators, utils } from "../emulators-nodejs";
+import { getEmulators, utils,BUILTIN } from "../emulators-nodejs";
 import { Shell } from "../utils/shell";
 
-const project=path.resolve(__dirname, "..", "..", "..");
+const emu=getEmulators(BUILTIN.development);
 
-const pathPrefix={
-    production: path.join(project, "dist"),
-    development: path.join(project, "build/wasm/"),
-};
-const emu=getEmulators(pathPrefix.development);
-
-const TEST_STRING="XDRGS";
 const config={
     dosboxConf: `[autoexec]
-echo ${TEST_STRING}
+echo hello
 `,
     jsdosConf: {
         version: "",
@@ -24,26 +16,21 @@ async function main() {
     const ci=await emu.dosboxDirect(config);
     let stdout="";
     ci.events().onStdout((data)=>{
-        stdout+=data; console.log(data);
+        stdout+=data; 
+        process.stdout.write(data)
     });
-
-
-    
-    const cmds=["mount c .","c:","echo ~!@#$%^&*()_+","echo 1234567890-="]
     const shell=new Shell(ci)
-    await shell.wait_prompt()
-    for (const cmd of cmds){
-        await utils.sleep(200)
-        console.log("exec command",cmd)
+    await shell.wait_prompt();
+    process.stdin.on("data",async data=>{
+        const cmd=data.toString('ascii')
+        if(cmd.trim().toLowerCase()==="exit"){
+            await ci.exit()
+            process.exit()
+        }
+        // console.log("exec:"+cmd)
         const out=await shell.exec(cmd)
-        console.log("exec result:",out);
-    }
-    
-    await utils.sleep(300)
-    await ci.exit();
-    
-    console.log(stdout)
-    process.exit()
+        // console.log("result:"+out);
+    })
 }
 
 main();

@@ -46,3 +46,13 @@ export class NodeJs implements Platform {
 }
 
 platform.current = new NodeJs()
+
+
+import path from "path";
+const project = path.resolve(__dirname, "..", "..");
+
+export const BUILTIN = {
+    project,
+    production: path.join(project, "dist"),
+    development: path.join(project, "build/wasm/"),
+};
