@@ -4,6 +4,7 @@ const os = require("os")
 
 
 const TEMPLATE=path.join(__dirname,"../src/dos/dosbox/ts/worker-server.js")
+const NODEJS_SHIM=path.join(__dirname,"../worker-shim.js")
 
 const config={
     dosbox:"dosbox.js"
@@ -19,10 +20,12 @@ function append(file,MODULE_NAME){
 
     const templateContent=fs.readFileSync(TEMPLATE,"utf-8")
     const newContent=templateContent.replace(/@MODULE_NAME@/g,MODULE_NAME)
+    const shimContent=fs.readFileSync(NODEJS_SHIM,"utf-8")
     const newFileContent=`
 ${fileContent}
 
 ${header}
+${shimContent}
 ${newContent}`;
     fs.writeFileSync(filePath,newFileContent,"utf-8")
     console.log(`File ${filePath} updated successfully!`);
