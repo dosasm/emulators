@@ -67,7 +67,9 @@ export class Shell {
                 idx: this.stdout.length
             }
             setTimeout(() => {
-                reject(cmd + " timeout")
+                if(!this.running) return
+                let out = this.stdout.slice(this.running.idx).join("");
+                this.running.resolve(out)
             }, timeout);
         })
         for (const code of string2jsdosKey(cmd, false, true)) {
