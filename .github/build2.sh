@@ -23,5 +23,6 @@ emcmake cmake -G "Ninja" ../..
 ninja -j8 wlibzip
 ninja -j8 wdosbox
 ninja -j8 wdosbox-x
-
+cd ../..
+node .github/worker.js
 

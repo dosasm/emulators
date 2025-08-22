@@ -14,7 +14,7 @@ echo hello
 };
 
 async function main() {
-    const ci=await emu.dosboxWorker(config).catch(e=>{
+    const ci=await emu.dosboxXWorker(config).catch(e=>{
         console.log(e);
         throw new Error()
     });

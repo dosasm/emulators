@@ -4,7 +4,7 @@ const os = require("os")
 
 
 const TEMPLATE=path.join(__dirname,"../src/dos/dosbox/ts/worker-server.js")
-const NODEJS_SHIM=path.join(__dirname,"../worker-shim.js")
+const NODEJS_SHIM=path.join(__dirname,"worker-shim.js")
 
 const config={
     dosbox:"dosbox.js"
