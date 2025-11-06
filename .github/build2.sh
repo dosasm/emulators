@@ -26,3 +26,4 @@ ninja -j8 wdosbox-x
 cd ../..
 node .github/worker.js
 
+yarn pack

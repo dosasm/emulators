@@ -1,12 +1,21 @@
 {
     "name": "emulators",
-    "version": "8.3.9",
+    "version": "8.3.9-dosasm4.0",
     "description": "Emulators (dos) with standartized API",
     "exports": {
         ".": {
-            "node": "./build/src/emulators-nodejs.js",
-            "browser": "./build/src/emulators-browser.js",
-            "default": "./build/src/emulators-browser.js"
+            "node": {
+                "types": "./build/src/emulators-nodejs.d.ts",
+                "default": "./build/src/emulators-nodejs.js"
+            },
+            "browser": {
+                "types": "./build/src/emulators-browser.d.ts",
+                "default": "./build/src/emulators-browser.js"
+            },
+            "default": {
+                "types": "./build/src/emulators-browser.d.ts",
+                "default": "./build/src/emulators-browser.js"
+            }
         }
     },
     "main": "build/src/emulators-browser.js",
