@@ -1,4 +1,4 @@
-import { httpRequest } from "../http";
+import { platform } from "./platform";
 
 export interface WasmModule {
     instantiate: (module?: any) => Promise<any>;
@@ -23,7 +23,7 @@ class Host {
     public wasmSupported = false;
     public globals: Globals;
     constructor() {
-        this.globals = typeof window === "undefined" ? {} : window as any;
+        this.globals = globalThis as any;
         if (!this.globals.module) {
             this.globals.module = {};
         }
@@ -187,7 +187,7 @@ function loadWasmModuleNode(url: string,
         return host.globals.compiled[moduleName];
     }
 
-    const emModule = require(url);
+    const emModule = platform.current.node_require(url);
     const compiledModulePromise = Promise.resolve(new CompiledNodeModule(emModule));
     if (moduleName) {
         host.globals.compiled[moduleName] = compiledModulePromise;
@@ -214,13 +214,13 @@ function loadWasmModuleBrowser(url: string,
 
         const indexOfJs = url.lastIndexOf(".js");
         const wasmUrl = url.substring(0, indexOfJs) + ".wasm" + url.substring(indexOfJs + 3);
-        const binaryPromise = httpRequest(wasmUrl, {
+        const binaryPromise = platform.current.httpRequest(wasmUrl, {
             responseType: "arraybuffer",
             progress: (total, loaded) => {
                 onprogress("Resolving DosBox (" + url + ")", total, loaded);
             },
         });
-        const scriptPromise = httpRequest(url, {
+        const scriptPromise = platform.current.httpRequest(url, {
             progress: (total, loaded) => {
                 onprogress("Resolving DosBox", total, loaded);
             },
@@ -234,7 +234,7 @@ function loadWasmModuleBrowser(url: string,
                 .then((instance) => receiveInstance(instance, wasmModule));
         };
 
-        eval.call(window, script as string);
+        eval.call(globalThis, script as string);
         host.globals.exports[moduleName] = host.globals.module.exports;
 
         return new CompiledBrowserModule(wasmModule,

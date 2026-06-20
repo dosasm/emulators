@@ -15,6 +15,11 @@ function build(compress: boolean) {
     );
 }
 
+exports.js=series(
+        compileJs,
+        parallel(emulators, test),
+    );
+
 exports.default = build(false);
 exports.production = series(
     build(true),

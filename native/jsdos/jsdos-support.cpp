@@ -63,12 +63,9 @@ void jsdos::cout(const char* data, int amount) {
       if (isascii(next) || next == '\n') {
         line += next;
       }
-
-      if (next == '\n') {
-        client_stdout(line.c_str(), line.length());
-        line.clear();
-      }
     }
+    client_stdout(line.c_str(), line.length());
+    line.clear();
   }
 }
 

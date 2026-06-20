@@ -1,9 +1,25 @@
 {
     "name": "emulators",
-    "version": "8.4.0",
+    "version": "8.4.0-dosasm0.1",
     "description": "Emulators (dos) with standartized API",
-    "main": "dist/emulators.js",
-    "types": "dist/types/emulators.d.ts",
+    "exports": {
+        ".": {
+            "node": {
+                "types": "./build/src/emulators-nodejs.d.ts",
+                "default": "./build/src/emulators-nodejs.js"
+            },
+            "browser": {
+                "types": "./build/src/emulators-browser.d.ts",
+                "default": "./build/src/emulators-browser.js"
+            },
+            "default": {
+                "types": "./build/src/emulators-browser.d.ts",
+                "default": "./build/src/emulators-browser.js"
+            }
+        }
+    },
+    "main": "build/src/emulators-browser.js",
+    "types": "build/src/emulators-browser.d.ts",
     "browserslist": [
         "defaults",
         "not ie 11",
@@ -39,7 +55,8 @@
         "@types/gulp-size": "^4.0.0",
         "@types/gulp-sourcemaps": "0.0.35",
         "@types/gulp-terser": "^1.2.1",
-        "@types/mocha": "^10.0.1",
+        "@types/jest": "^30.0.0",
+        "@types/mocha": "^10.0.10",
         "@types/node": "^18.15.11",
         "@types/vinyl-buffer": "^1.0.0",
         "@types/vinyl-source-stream": "0.0.30",

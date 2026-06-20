@@ -142,8 +142,19 @@ include("${TARGETS_DIR}/sokol.cmake")
 include("${TARGETS_DIR}/dosbox-sdl.cmake")
 include("${TARGETS_DIR}/dosbox-x-sdl2.cmake")
 
+set(SOKOL_SHDC_DIR "${CMAKE_CURRENT_LIST_DIR}/native/sokol-tools-bin/bin")
+if (APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set(SOKOL_SHDC "${SOKOL_SHDC_DIR}/osx_arm64/sokol-shdc")
+elseif (APPLE)
+    set(SOKOL_SHDC "${SOKOL_SHDC_DIR}/osx/sokol-shdc")
+elseif (WIN32)
+    set(SOKOL_SHDC "${SOKOL_SHDC_DIR}/win32/sokol-shdc.exe")
+else ()
+    set(SOKOL_SHDC "${SOKOL_SHDC_DIR}/linux/sokol-shdc")
+endif ()
+
 add_custom_target(sokol-shaders
-		COMMAND "${CMAKE_CURRENT_LIST_DIR}/native/sokol-tools-bin/bin/linux/sokol-shdc"
+		COMMAND "${SOKOL_SHDC}"
 		--input "${CMAKE_CURRENT_LIST_DIR}/native/sokol/shaders.glsl"
 		--output "${CMAKE_CURRENT_LIST_DIR}/native/sokol/shaders.h"
 		--slang glsl330)

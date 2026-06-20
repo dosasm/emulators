@@ -39,26 +39,46 @@ npm install -g http-server yarn
 yarn
 ```
 
-### Compile the project
+### Compile the wasm project
 
 #### 1 default build scripts via gulp
 
 ```bash
 source "/Users/a1/sys/emsdk/emsdk_env.sh"
-yarn run gulp wasm
-yarn run gulp
-http-server .
+yarn run gulp production # run yarn run gulp if do not want compress js code 
+yarn tsc -p .
+node build/src/example/basic-node.js # run with javascript
+node build/src/example/basic-node.js w # run with javascript worker
+```
+
+```bash
+yarn run gulp wasm # build the wasm with emsdk ninja
+yarn run gulp js # build js code
 ```
 
 #### 2 using bash
 
 ```bash
-mkdir -p build/wasm
-cd build/wasm
+source "/Users/a1/sys/emsdk/emsdk_env.sh"
+mkdir -p build/wasmRelease
+cd build/wasmRease
 emcmake cmake -G "Ninja" ../..
 ninja -j8 wlibzip
 ninja -j8 wdosbox
 ninja -j8 wdosbox-x
+ninja -j8 wdosbox-x-jspi
 cd ../..
-node .github/worker.js
+```
+
+#### 3 with Debug
+
+```bash
+mkdir -p build/wasmDebug
+cd build/wasmDebug
+emcmake cmake -G "Ninja"  -DCMAKE_BUILD_TYPE=Debug ../..
+ninja -j8 wlibzip
+ninja -j8 wdosbox
+ninja -j8 wdosbox-x
+ninja -j8 wdosbox-x-jspi
+cd ../..
 ```

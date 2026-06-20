@@ -1,0 +1,56 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug basic-node.js",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "sourceMaps": true,
+            "program": "${workspaceFolder}/build/src/example/basic-node.js",
+            "args": ["w"]
+        },
+        {
+          "name": "Mocha Test",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/mocha",
+          "args": [
+            "--timeout", "999999",
+            "--colors",
+            "${workspaceFolder}/build/src/test/shell.test.js"
+          ],
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen",
+        },
+        {
+            "name": "Debug dosbox-sokol", // 配置名称（可自定义）
+            "type": "cppdbg",             // 调试类型（C++ 调试）
+            "request": "launch",          // 启动方式（主动启动程序）
+            "program": "${workspaceFolder}/build/native/dosbox-sokol", // 可执行文件路径
+            "args": [],                   // 程序启动参数（根据需要添加）
+            "stopAtEntry": false,         // 是否在入口处暂停（false 表示直接运行）
+            "cwd": "${workspaceFolder}",  // 工作目录（项目根目录）
+            "environment": [],            // 环境变量（默认继承系统环境）
+            "externalConsole": false,     // 是否使用外部控制台（false 表示集成到 VS Code）
+            "MIMode": "gdb",              // 调试器（GNU Debugger）
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/bin/gdb", // GDB 路径（根据系统调整）
+            "logging": {
+                "moduleLoad": false,
+                "trace": true
+            }
+        },
+    ]
+}

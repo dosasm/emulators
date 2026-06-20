@@ -3,6 +3,8 @@ import { TransportLayer, MessageHandler, ClientMessage, Net } from "../../../pro
 import { MessagesQueue } from "../../../protocol/messages-queue";
 import { createAudioPort } from "./audio-worklet";
 
+import {platform} from "../../../impl/platform";
+
 export async function dosWorker(workerUrl: string,
                                 wasmModule: WasmModule,
                                 sessionId: string,
@@ -12,22 +14,17 @@ export async function dosWorker(workerUrl: string,
     const messagesQueue = new MessagesQueue();
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
 
-    const response = await fetch(workerUrl);
-    if (response.status !== 200) {
-        throw new Error("Unable to download '" + workerUrl + "' (" +
-            response.status + "): " + response.statusText);
-    }
-    const localUrl = URL.createObjectURL(await response.blob());
-    const worker = new Worker(localUrl);
-    worker.onerror = (e) => {
+    let onerror = (e:ErrorEvent) => {
         handler("ws-err", { type: e.type, filename: e.filename, message: e.message });
     };
-    worker.onmessage = (e) => {
+    let onmessage = (e:MessageEvent) => {
         const data = e.data;
         if (data?.name !== undefined) {
             handler(data.name, data.props);
         }
     };
+
+    const worker = await platform.current.createWorker(workerUrl,onerror,onmessage);
 
     const transportLayer: TransportLayer = {
         sessionId,
@@ -45,7 +42,6 @@ export async function dosWorker(workerUrl: string,
             messagesQueue.sendTo(handler);
         },
         exit: () => {
-            URL.revokeObjectURL(localUrl);
             worker.terminate();
         },
         net: net ?? null,
