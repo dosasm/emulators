@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ 8.xx ]
+    branches: [ "dev/*" ]
     tags:
       - "v*.*.*"
   pull_request:
