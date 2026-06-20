@@ -190,9 +190,9 @@ if (typeof global !== "undefined") {
     (global as any).emulators = emulatorsImpl;
 }
 
-export * as utils from './utils/main'
-export {XhrOptions,XhrRequest} from "./impl/http"
-export {platform,Platform} from "./impl/platform"
+export * as utils from "./utils/main";
+export { XhrOptions, XhrRequest } from "./impl/http";
+export { platform, Platform } from "./impl/platform";
 
 export function getEmulators(pathPrefix:string|undefined):Emulators {
     if (typeof pathPrefix=="string") {
