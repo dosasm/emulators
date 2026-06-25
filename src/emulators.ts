@@ -191,8 +191,9 @@ if (typeof global !== "undefined") {
 }
 
 export * as utils from "./utils/main";
-export { XhrOptions, XhrRequest } from "./impl/http";
 export { platform, Platform } from "./impl/platform";
+export { HttpRequest, XhrOptions, XhrRequest } from "./impl/http";
+export { AsyncifyStats, FsNode,Net, CPUMetrics, DataChunk, FrameLine, TransportLayer,ClientMessage,ServerMessage,MessageHandler } from "./protocol/protocol";
 
 export function getEmulators(pathPrefix:string|undefined):Emulators {
     if (typeof pathPrefix=="string") {

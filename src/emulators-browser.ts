@@ -2,7 +2,6 @@ export * from "./emulators";
 
 import { Platform, platform } from "./impl/platform";
 import { XhrRequest } from "./impl/http";
-export { HttpRequest, XhrOptions, XhrRequest } from "./impl/http";
 
 export class Browser implements Platform {
     resolveJSpath(a: { prefix: string; js: string; suffix: string }): string {
