@@ -82,3 +82,10 @@ ninja -j8 wdosbox-x
 ninja -j8 wdosbox-x-jspi
 cd ../..
 ```
+
+
+## publish
+
+```
+yarn publish --registry https://registry.npmjs.org  --access public
+```
