@@ -1,5 +1,5 @@
 {
-    "name": "emulators",
+    "name": "@xsro/emulators",
     "version": "8.4.0-dosasm0.1",
     "description": "Emulators (dos) with standartized API",
     "exports": {
