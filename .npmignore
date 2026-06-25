@@ -8,7 +8,4 @@
 
 !/package.json     
 !/build/src/**/*
-!/build/wasm/*.js
-!/build/wasm/*.js.symbols
-!/build/wasm/*.wasm
-!/build/wasm/*.wasm.map
+!/dist/*.*
