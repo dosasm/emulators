@@ -65,9 +65,9 @@ function dosboxJs() {
 }
 
 function dosboxJs2() {
-    return src("dist/wdosbox.js")
+    return src("dist/wdosbox-nodefs.js")
         .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js"),false))
-        .pipe(replace("@MODULE_NAME@", "WDOSBOX"))
+        .pipe(replace("@MODULE_NAME@", "WDOSBOXNODEFS"))
         .pipe(replace("@SOCKDRIVE@", ""))
         .pipe(dest("dist"));
 }
@@ -83,7 +83,7 @@ function dosboxxJs() {
 function dosboxxJs2() {
     return src("dist/wdosbox-x-nodefs.js")
         .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js"),false))
-        .pipe(replace("@MODULE_NAME@", "WDOSBOXX"))
+        .pipe(replace("@MODULE_NAME@", "WDOSBOXXNODEFS"))
         .pipe(replace("@SOCKDRIVE@", fs.readFileSync("dist/sockdrive.js", "utf8")))
         .pipe(dest("dist"));
 }

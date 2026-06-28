@@ -59,6 +59,18 @@ platform.current = new NodeJs();
 const NODEFS_WDOSBOX_JS = "wdosbox-nodefs.js";
 const NODEFS_WDOSBOXX_JS = "wdosbox-x-nodefs.js";
 
+/**
+ * NODEFS mount configuration.
+ * Keys are host filesystem paths (absolute or relative).
+ * Values are the corresponding subpaths under /home/web_user in the WASM filesystem.
+ *
+ * Example:
+ *   { "/data/games": "games", "/data/saves": "saves" }
+ *   mounts host /data/games → /home/web_user/games
+ *   mounts host /data/saves → /home/web_user/saves
+ */
+export type NodeMounts = { [hostPath: string]: string };
+
 class NodeFsWasmModules implements IWasmModules {
     private pathPrefix: string;
     private pathSuffix: string;
@@ -114,11 +126,11 @@ class NodeFsWasmModules implements IWasmModules {
 
 /**
  * Run DOSBox/DOSBox-X WASM directly in the current Node.js process with NODEFS support.
- * After WASM instantiation, mounts the host filesystem at the specified root path.
+ * After WASM instantiation, mounts host directories into the WASM filesystem.
  */
 async function dosNodeDirect(wasmModule: WasmModule,
                              sessionId: string,
-                             nodeRootPath?: string,
+                             mounts?: NodeMounts,
                              net?: Net): Promise<TransportLayer> {
     const messagesQueue = new MessagesQueue();
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
@@ -148,25 +160,46 @@ async function dosNodeDirect(wasmModule: WasmModule,
 
     await wasmModule.instantiate(module);
 
-    // Mount NODEFS if a host root path is provided
-    if (nodeRootPath && module.FS) {
-        const fs = require("node:fs");
+    // Mount NODEFS host directories into the WASM filesystem
+    if (mounts && module.FS) {
+        const nodeFs = require("node:fs");
         const nodePath = require("node:path");
-        const resolvedRoot = nodePath.resolve(nodeRootPath);
 
-        if (!fs.existsSync(resolvedRoot)) {
-            fs.mkdirSync(resolvedRoot, { recursive: true });
-        }
+        const HOME = "/home/web_user";
 
-        // Mount NODEFS at /home/web_user so DOSBox sees the host directory as its working dir
-        const mountPoint = "/home/web_user";
+        // Ensure the base mount point exists
         try {
-            module.FS.mkdir(mountPoint);
+            module.FS.mkdir(HOME);
         } catch (e) {
-            // directory may already exist
+            // already exists
         }
-        module.FS.mount(module.FS.filesystems.NODEFS, { root: resolvedRoot }, mountPoint);
-        module.FS.chdir(mountPoint);
+
+        for (const hostPath of Object.keys(mounts)) {
+            const subPath = mounts[hostPath];
+            const resolvedRoot = nodePath.resolve(hostPath);
+
+            // Ensure the host directory exists
+            if (!nodeFs.existsSync(resolvedRoot)) {
+                nodeFs.mkdirSync(resolvedRoot, { recursive: true });
+            }
+
+            // Create each intermediate directory in the WASM path
+            const wasmMountPath = HOME + "/" + subPath;
+            const parts = wasmMountPath.split("/").filter(Boolean);
+            let current = "";
+            for (const part of parts) {
+                current += "/" + part;
+                try {
+                    module.FS.mkdir(current);
+                } catch (e) {
+                    // already exists
+                }
+            }
+
+            module.FS.mount(module.FS.filesystems.NODEFS, { root: resolvedRoot }, wasmMountPath);
+        }
+
+        module.FS.chdir(HOME);
     }
 
     module.callMain([sessionId]);
@@ -192,27 +225,32 @@ export class EmulatorsImplNode extends EmulatorsImpl {
     /**
      * Create a DOSBox instance using NODEFS, running directly in the current process.
      * @param init - initialization data (bundle, files, or config)
-     * @param options - backend options; use `nodeRootPath` in net field context for NODEFS mount path
-     * @param nodeRootPath - host directory to mount via NODEFS at /home/web_user
+     * @param options - backend options
+     * @param mounts - NODEFS mount configuration: { [hostPath]: "subpath under /home/web_user" }
      */
     async dosboxNodeDirect(init: InitFs, options?: BackendOptions,
-                           nodeRootPath?: string): Promise<CommandInterface> {
+                           mounts?: NodeMounts): Promise<CommandInterface> {
         const modules = this.nodeWasmModules();
         const dosboxWasm = await modules.dosbox();
         const transportLayer = await dosNodeDirect(dosboxWasm, "session-" + Date.now(),
-            nodeRootPath, options?.net);
+            mounts, options?.net);
         return this.backend(init, transportLayer, options);
     }
 
     /**
      * Create a DOSBox instance using NODEFS, running in a Node.js worker thread.
+     * @param init - initialization data (bundle, files, or config)
+     * @param options - backend options
+     * @param mounts - NODEFS mount configuration: { [hostPath]: "subpath under /home/web_user" }
      */
-    async dosboxNodeWorker(init: InitFs, options?: BackendOptions): Promise<CommandInterface> {
+    async dosboxNodeWorker(init: InitFs, options?: BackendOptions,
+                           mounts?: NodeMounts): Promise<CommandInterface> {
         const modules = this.nodeWasmModules();
         const dosboxWasm = await modules.dosbox();
         const transportLayer = await dosWorker(
             this.pathPrefix + NODEFS_WDOSBOX_JS + this.pathSuffix,
-            dosboxWasm, "session-" + Date.now(), options?.canvas, options?.audioWorklet, options?.net);
+            dosboxWasm, "session-" + Date.now(), options?.canvas, options?.audioWorklet, options?.net,
+            mounts);
         return this.backend(init, transportLayer, options);
     }
 
@@ -220,26 +258,31 @@ export class EmulatorsImplNode extends EmulatorsImpl {
      * Create a DOSBox-X instance using NODEFS, running directly in the current process.
      * @param init - initialization data (bundle, files, or config)
      * @param options - backend options
-     * @param nodeRootPath - host directory to mount via NODEFS at /home/web_user
+     * @param mounts - NODEFS mount configuration: { [hostPath]: "subpath under /home/web_user" }
      */
     async dosboxXNodeDirect(init: InitFs, options?: BackendOptions,
-                            nodeRootPath?: string): Promise<CommandInterface> {
+                            mounts?: NodeMounts): Promise<CommandInterface> {
         const modules = this.nodeWasmModules();
         const dosboxxWasm = await modules.dosboxx();
         const transportLayer = await dosNodeDirect(dosboxxWasm, "session-" + Date.now(),
-            nodeRootPath, options?.net);
+            mounts, options?.net);
         return this.backend(init, transportLayer, options);
     }
 
     /**
      * Create a DOSBox-X instance using NODEFS, running in a Node.js worker thread.
+     * @param init - initialization data (bundle, files, or config)
+     * @param options - backend options
+     * @param mounts - NODEFS mount configuration: { [hostPath]: "subpath under /home/web_user" }
      */
-    async dosboxXNodeWorker(init: InitFs, options?: BackendOptions): Promise<CommandInterface> {
+    async dosboxXNodeWorker(init: InitFs, options?: BackendOptions,
+                            mounts?: NodeMounts): Promise<CommandInterface> {
         const modules = this.nodeWasmModules();
         const dosboxxWasm = await modules.dosboxx();
         const transportLayer = await dosWorker(
             this.pathPrefix + NODEFS_WDOSBOXX_JS + this.pathSuffix,
-            dosboxxWasm, "session-" + Date.now(), options?.canvas, options?.audioWorklet, options?.net);
+            dosboxxWasm, "session-" + Date.now(), options?.canvas, options?.audioWorklet, options?.net,
+            mounts);
         return this.backend(init, transportLayer, options);
     }
 }

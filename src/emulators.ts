@@ -1,5 +1,5 @@
 import DosBundle from "./dos/bundle/dos-bundle";
-import emulatorsImpl from "./impl/emulators-impl";
+import emulatorsImpl, { EmulatorsImpl } from "./impl/emulators-impl";
 export {EmulatorsImpl} from "./impl/emulators-impl";
 
 
@@ -197,7 +197,7 @@ export { platform, Platform } from "./impl/platform";
 export { HttpRequest, XhrOptions, XhrRequest } from "./impl/http";
 export { AsyncifyStats, FsNode,Net, CPUMetrics, DataChunk, FrameLine, TransportLayer,ClientMessage,ServerMessage,MessageHandler } from "./protocol/protocol";
 
-export function getEmulators(pathPrefix:string|undefined):Emulators {
+export function getEmulators(pathPrefix:string|undefined):EmulatorsImpl {
     if (typeof pathPrefix=="string") {
         emulatorsImpl.pathPrefix=pathPrefix;
     }

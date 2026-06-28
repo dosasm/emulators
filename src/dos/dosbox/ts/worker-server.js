@@ -122,6 +122,33 @@ if (worker) {
             }
 
             module.onRuntimeInitialized = () => {
+                // Mount NODEFS host directories if configured
+                const mounts = data.props.mounts;
+                if (mounts && module.FS) {
+                    const HOME = "/home/web_user";
+                    try { module.FS.mkdir(HOME); } catch (e) { /* already exists */ }
+
+                    for (const hostPath of Object.keys(mounts)) {
+                        const subPath = mounts[hostPath];
+                        const resolvedRoot = typeof require !== "undefined"
+                            ? require("path").resolve(hostPath)
+                            : hostPath;
+
+                        // Create each intermediate directory in the WASM path
+                        const wasmMountPath = HOME + "/" + subPath;
+                        const parts = wasmMountPath.split("/").filter(Boolean);
+                        let current = "";
+                        for (const part of parts) {
+                            current += "/" + part;
+                            try { module.FS.mkdir(current); } catch (e) { /* already exists */ }
+                        }
+
+                        module.FS.mount(module.FS.filesystems.NODEFS, { root: resolvedRoot }, wasmMountPath);
+                    }
+
+                    module.FS.chdir(HOME);
+                }
+
                 module.callMain([sessionId]);
             };
 

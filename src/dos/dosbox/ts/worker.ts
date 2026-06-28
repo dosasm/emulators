@@ -10,7 +10,8 @@ export async function dosWorker(workerUrl: string,
                                 sessionId: string,
                                 canvas?: OffscreenCanvas,
                                 audioWorklet?: boolean,
-                                net?: Net): Promise<TransportLayer> {
+                                net?: Net,
+                                mounts?: { [hostPath: string]: string }): Promise<TransportLayer> {
     const messagesQueue = new MessagesQueue();
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
 
@@ -63,12 +64,14 @@ export async function dosWorker(workerUrl: string,
             sessionId,
             canvas,
             audioPort,
+            mounts,
         }, transfer);
     } catch (e) {
         transportLayer.sendMessageToServer("wc-install", {
             sessionId,
             canvas,
             audioPort,
+            mounts,
         }, transfer);
     }
 
