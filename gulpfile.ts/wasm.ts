@@ -41,6 +41,14 @@ async function makeWDosboxXJspi() {
     return await make(".", "build/wasm", "wdosbox-x-jspi");
 }
 
+async function makeWDosboxNodefs() {
+    return await make(".", "build/wasm", "wdosbox-nodefs");
+}
+
+async function makeWDosboxXNodefs() {
+    return await make(".", "build/wasm", "wdosbox-x-nodefs");
+}
+
 function copyAssets() {
     return src(["build/wasm/w*.js",
         "build/wasm/w*.wasm",
@@ -122,8 +130,10 @@ export function wasm(compress: boolean) {
         makeWLibZip,
         makeGL4ES,
         makeWDosbox,
+        makeWDosboxNodefs,
         makeWDosboxX,
         makeWDosboxXJspi,
+        makeWDosboxXNodefs,
         copyAssets,
         () => generateBuildInfo(compress),
     );

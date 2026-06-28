@@ -1,5 +1,7 @@
 import DosBundle from "./dos/bundle/dos-bundle";
 import emulatorsImpl from "./impl/emulators-impl";
+export {EmulatorsImpl} from "./impl/emulators-impl";
+
 
 import { AsyncifyStats, TransportLayer, FsNode, Net } from "./protocol/protocol";
 

@@ -64,8 +64,24 @@ function dosboxJs() {
         .pipe(dest("dist"));
 }
 
+function dosboxJs2() {
+    return src("dist/wdosbox.js")
+        .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js"),false))
+        .pipe(replace("@MODULE_NAME@", "WDOSBOX"))
+        .pipe(replace("@SOCKDRIVE@", ""))
+        .pipe(dest("dist"));
+}
+
 function dosboxxJs() {
     return src("dist/wdosbox-x.js")
+        .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js"),false))
+        .pipe(replace("@MODULE_NAME@", "WDOSBOXX"))
+        .pipe(replace("@SOCKDRIVE@", fs.readFileSync("dist/sockdrive.js", "utf8")))
+        .pipe(dest("dist"));
+}
+
+function dosboxxJs2() {
+    return src("dist/wdosbox-x-nodefs.js")
         .pipe(footer(fs.readFileSync("src/dos/dosbox/ts/worker-server.js"),false))
         .pipe(replace("@MODULE_NAME@", "WDOSBOXX"))
         .pipe(replace("@SOCKDRIVE@", fs.readFileSync("dist/sockdrive.js", "utf8")))
@@ -80,6 +96,7 @@ function dosboxxJsJspi() {
         .pipe(dest("dist"));
 }
 
+
 function cleanupJs() {
     return del("dist/sockdrive.js");
 }
@@ -92,4 +109,4 @@ function copyAssets() {
 }
 
 export const compileJs = series(clean, copyAssets,parallel(emulatorsJs, sockdriveJs));
-export const emulators = series( copyAssets,parallel(dosboxJs, dosboxxJs, dosboxxJsJspi), cleanupJs);
+export const emulators = series( copyAssets,parallel(dosboxJs, dosboxxJs,dosboxJs2, dosboxxJs2, dosboxxJsJspi), cleanupJs);

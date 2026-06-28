@@ -194,6 +194,22 @@ if (${EMSCRIPTEN})
             "-sASYNCIFY_IMPORTS=['syncSleep']"
             "-sASYNCIFY_WHITELIST=@${TARGETS_DIR}/dosbox-asyncify.txt"
             "-sEXPORT_NAME='WDOSBOX'")
+
+    add_executable(wdosbox-nodefs
+        "${SRC_DIR}/dos/dosbox/cpp/worker-protocol.cpp"
+        "${SRC_DIR}/dos/dosbox/cpp/direct-debugger.cpp")
+    target_link_libraries(wdosbox-nodefs libdosbox libdosbox-core libzip)
+    set_target_properties(wdosbox-nodefs PROPERTIES SUFFIX .js)
+    target_link_options(wdosbox-nodefs PUBLIC
+            "${EM_LINK_OPTIONS}"
+            "-sUSE_ZLIB=1"
+            "-sWASM=1"
+            "-sASYNCIFY=1"
+            "-sASYNCIFY_IMPORTS=['syncSleep']"
+            "-sASYNCIFY_WHITELIST=@${TARGETS_DIR}/dosbox-asyncify.txt"
+            "-sEXPORT_NAME='WDOSBOXNODEFS'"
+            "-lnodefs.js")
+
 else ()
     target_include_directories(libdosbox-core PUBLIC "${NATIVE_DIR}/jsdos/linux")
 endif ()

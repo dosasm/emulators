@@ -10,7 +10,7 @@ import { dosWorker } from "../dos/dosbox/ts/worker";
 import { TransportLayer, CommandInterfaceOverTransportLayer } from "../protocol/protocol";
 import LibZip from "../libzip/libzip";
 
-class EmulatorsImpl implements Emulators {
+export class EmulatorsImpl implements Emulators {
     pathPrefix = "";
     pathSuffix = "";
     version = Build.version;

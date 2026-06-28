@@ -763,7 +763,21 @@ if (${EMSCRIPTEN})
         "-sEXPORT_NAME='WDOSBOXXJSPI'"
     )
 
+    add_executable(wdosbox-x-nodefs "${SRC_DIR}/dos/dosbox/cpp/worker-protocol.cpp"
+        "${NATIVE_DIR}/jsdos/jsdos-asyncify.cpp")
+    set_target_properties(wdosbox-x-nodefs PROPERTIES SUFFIX .js)
+    target_link_libraries(wdosbox-x-nodefs libdosbox-x-jsdos libzip "${GL4ES_LIBRARY}")
+    target_link_options(wdosbox-x-nodefs PUBLIC
+        ${WDOSBOXX_LINK_OPTIONS}
+        "-sASYNCIFY=1"
+        "-sASYNCIFY_IMPORTS=['syncSleep']"
+        "-sASYNCIFY_WHITELIST=@${TARGETS_DIR}/dosbox-x-asyncify.txt"
+        "-sEXPORT_NAME='WDOSBOXXNODEFS'"
+        "-lnodefs.js"
+    )
+
     add_dependencies(wdosbox-x gl4es)
+    add_dependencies(wdosbox-x-nodefs gl4es)
 elseif (APPLE)
     target_link_libraries(dosbox-x-sdl2
             ${SDL2_LIBRARIES}

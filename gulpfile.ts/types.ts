@@ -9,8 +9,7 @@ function clean() {
 
 async function types() {
     console.log("skipped types generation")
-    // await execute("./node_modules/.bin/tsc", "--emitDeclarationOnly", "--declaration",
-        // "src/emulators.ts", "--outDir", "dist/types", "--downlevelIteration");
+    await execute("yarn","tsc", "-p",".");
 }
 
 export const emitTypes = series(clean, types);
