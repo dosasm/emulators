@@ -25,6 +25,7 @@ exports.production = series(
     build(true),
     emitTypes,
 );
+exports.test = test;
 exports.wasm = wasm(false);
 exports.updateDosbox = updateDosbox;
 exports.dosboxAsyncify = dosboxAsyncify;
