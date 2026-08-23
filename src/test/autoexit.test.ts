@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { EmulatorsImplNode, BUILTIN } from "../emulators-nodejs";
+import { EmulatorsImplNode, get_builtin_dist } from "../emulators-nodejs";
 
 
 //
@@ -35,7 +35,7 @@ exit
 
     beforeEach(() => {
         emulators = new EmulatorsImplNode();
-        emulators.pathPrefix = BUILTIN.production;
+        emulators.pathPrefix = get_builtin_dist().production;
     });
 
     describe("Autoexec exit via direct mode", () => {

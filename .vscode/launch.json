@@ -23,7 +23,7 @@
           "args": [
             "--timeout", "999999",
             "--colors",
-            "${workspaceFolder}/build/src/test/shell.test.js"
+            "${workspaceFolder}/src/test/ciexit.test.ts"
           ],
           "console": "integratedTerminal",
           "internalConsoleOptions": "neverOpen",

@@ -289,10 +289,25 @@ export class EmulatorsImplNode extends EmulatorsImpl {
 
 
 import path from "path";
-const project = __filename.endsWith(".ts")? path.resolve(__dirname, ".."):path.resolve(__dirname, "..", "..");
+import fs from "node:fs";
 
-export const BUILTIN = {
-    project,
-    production: path.join(project, "dist/"),
-    development: path.join(project, "build/wasm/"),
-};
+export function get_builtin_dist(){
+    let project = __dirname;
+    while(true){
+        const packageJson=path.join(project,"package.json");
+        if (fs.existsSync(packageJson)){
+            break
+        }else{
+            project=path.dirname(project);
+        }
+    }
+    console.log("project:",project);
+
+    const BUILTIN = {
+        project,
+        production: path.join(project, "dist/"),
+        development: path.join(project, "build/wasm/"),
+    };
+    return BUILTIN;
+}
+

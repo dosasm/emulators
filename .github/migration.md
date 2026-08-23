@@ -39,22 +39,21 @@ npm install -g http-server yarn
 yarn
 ```
 
-### Compile the wasm project
-
-#### 1 default build scripts via gulp
+### Compile all
 
 ```bash
 source "/Users/a1/sys/emsdk/emsdk_env.sh"
+rm -rf build dist
 yarn run gulp production # run yarn run gulp if do not want compress js code 
-yarn tsc -p .
 node build/src/example/basic-node.js # run with javascript
-node build/src/example/basic-node.js w # run with javascript worker
 ```
 
 ```bash
 yarn run gulp wasm # build the wasm with emsdk ninja
 yarn run gulp js # build js code
 ```
+
+### compile wasm only
 
 #### 2 using bash
 

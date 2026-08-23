@@ -1,23 +1,8 @@
 import * as assert from "assert";
-import { EmulatorsImplNode, BUILTIN } from "../emulators-nodejs";
+import { EmulatorsImplNode, get_builtin_dist } from "../emulators-nodejs";
 
 //
-// 1. NOTE: dosbox tests must NOT include `exit` in the autoexec config.
-//
-// Root cause: The dosbox WASM build includes "main" in its asyncify whitelist
-// (targets/dosbox-asyncify.txt), which causes emscripten_exit_with_live_runtime()
-// to malfunction — the WASM runtime exits immediately after main() returns,
-// before bundles can be sent to the backend. This results in:
-//   ExitStatus { message: "Program terminated with exit(0)", status: 0 }
-//
-// dosbox-x does NOT have "main" in its asyncify whitelist, so it works fine
-// with `exit` in autoexec.
-//
-// Workaround: omit `exit` from dosbox autoexec; let ci.exit() handle cleanup.
-//
-// ──────────────────────────────────────────────────────────────────────────────
-//
-// 2. onUnload is called before onExit
+// onUnload is called before onExit
 //
 // onExit:
 //   Interface:  (consumer: () => void) => void   — synchronous
@@ -58,7 +43,7 @@ dir
 
     beforeEach(() => {
         emulators = new EmulatorsImplNode();
-        emulators.pathPrefix = BUILTIN.production;
+        emulators.pathPrefix = get_builtin_dist().production;
     });
 
     describe("ci.exit() via direct mode", () => {
@@ -135,7 +120,7 @@ dir
 
     beforeEach(() => {
         emulators = new EmulatorsImplNode();
-        emulators.pathPrefix = BUILTIN.production;
+        emulators.pathPrefix = get_builtin_dist().production;
     });
 
     describe("ci.exit() via direct mode", () => {
