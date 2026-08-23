@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <list>
+#include <sys/random.h>
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>

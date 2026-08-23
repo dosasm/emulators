@@ -29,28 +29,13 @@
           "internalConsoleOptions": "neverOpen",
         },
         {
-            "name": "Debug dosbox-sokol", // 配置名称（可自定义）
-            "type": "cppdbg",             // 调试类型（C++ 调试）
-            "request": "launch",          // 启动方式（主动启动程序）
-            "program": "${workspaceFolder}/build/native/dosbox-sokol", // 可执行文件路径
-            "args": [],                   // 程序启动参数（根据需要添加）
-            "stopAtEntry": false,         // 是否在入口处暂停（false 表示直接运行）
-            "cwd": "${workspaceFolder}",  // 工作目录（项目根目录）
-            "environment": [],            // 环境变量（默认继承系统环境）
-            "externalConsole": false,     // 是否使用外部控制台（false 表示集成到 VS Code）
-            "MIMode": "gdb",              // 调试器（GNU Debugger）
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ],
-            "miDebuggerPath": "/usr/bin/gdb", // GDB 路径（根据系统调整）
-            "logging": {
-                "moduleLoad": false,
-                "trace": true
-            }
-        },
+            "name": "Debug with CodeLLDB",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/native/dosbox-sokol",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false
+        }
     ]
 }

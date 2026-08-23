@@ -679,6 +679,20 @@ set(DOSBOX_X_INCLUDE_DIRECTORIES
         "${SDL2_INCLUDE_DIRS}"
         )
 
+# Add OpenGL include directory for macOS
+if(APPLE)
+    find_package(OpenGL QUIET)
+    if(OPENGL_INCLUDE_DIR)
+        list(APPEND DOSBOX_X_INCLUDE_DIRECTORIES "${OPENGL_INCLUDE_DIR}")
+    else()
+        # Fallback: manually add the OpenGL framework headers path
+        set(OPENGL_FRAMEWORK_DIR "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers")
+        if(EXISTS "${OPENGL_FRAMEWORK_DIR}")
+            list(APPEND DOSBOX_X_INCLUDE_DIRECTORIES "${OPENGL_FRAMEWORK_DIR}")
+        endif()
+    endif()
+endif()
+
 target_include_directories(libdosbox-x-sdl2 PUBLIC
         ${DOSBOX_X_INCLUDE_DIRECTORIES}
         )
@@ -820,6 +834,8 @@ elseif (X86)
     target_compile_definitions(libdosbox-x-sdl2 PUBLIC -DX86)
     target_compile_definitions(libdosbox-x-jsdos PUBLIC -DX86)
 elseif (ANDROID)
+elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64)$")
+    # ARM64 native build, no special flags needed
 else ()
     set_target_properties(libdosbox-x-sdl2 PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
     set_target_properties(libdosbox-x-jsdos PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")

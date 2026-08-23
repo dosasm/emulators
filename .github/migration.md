@@ -88,3 +88,52 @@ cd ../..
 ```
 yarn publish --registry https://registry.npmjs.org  --access public
 ```
+
+---
+
+## Build and run native C++ sokol target
+
+The sokol target builds a native C++ executable using the [sokol-lib](https://github.com/otis-projects/sokol-lib) rendering backend. This is useful for testing on a native machine without a browser or Emscripten.
+
+### Prerequisites
+
+- **macOS**: `brew install cmake ninja sdl2`
+- **Linux**: `apt install cmake ninja-build libsdl2-dev`
+
+### Build
+
+```bash
+# Create build directory
+mkdir -p build/native
+cd build/native
+
+# Configure (macOS)
+cmake -GNinja -DCMAKE_BUILD_TYPE=Debug \
+  -DSDL_NET_INCLUDE_DIR=/opt/homebrew/include/SDL2 \
+  -DSDL_NET_LIBRARY="/opt/homebrew/lib/libSDL2_net.dylib" \
+  ../..
+
+# Configure (Linux)
+cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ../..
+
+# Build
+ninja dosbox-sokol
+# or for the full DOSBox-X variant:
+ninja dosbox-x-sokol
+```
+
+### Run
+
+```bash
+./build/native/dosbox-sokol
+```
+
+### VS Code debug
+
+The project includes a launch configuration `Debug dosbox-sokol` in `.vscode/launch.json` that runs `${workspaceFolder}/build/native/dosbox-sokol`. It uses LLDB (`/usr/bin/lldb`) as the debugger, which is the native macOS debugger and works with Apple Silicon.
+
+### Known issues on macOS
+
+- **OpenGL headers**: The macOS SDK stores OpenGL headers in `OpenGL.framework/Headers/gl.h` but code uses `#include <GL/gl.h>`. A symlink is automatically created during cmake configure to bridge this.
+- **Apple Silicon (ARM64)**: The build system auto-detects architecture via `CMAKE_SYSTEM_PROCESSOR`. x86 assembly is disabled on ARM64.
+- **SDL_net**: On macOS, `find_package(SDL_net)` looks for SDL_net v1 but Homebrew provides SDL2_net. Pass the include/library paths manually as shown above.

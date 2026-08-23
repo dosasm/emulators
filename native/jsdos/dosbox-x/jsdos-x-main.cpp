@@ -8032,13 +8032,13 @@ int jsdos_main(Config *config) SDL_MAIN_NOEXCEPT {
             the .app bundle from the Finder) the current working directory is / (fs root). */
     extern std::string MacOSXEXEPath;
     extern std::string MacOSXResPath;
-    MacOSXEXEPath = argv[0];
+    MacOSXEXEPath = exepath;
 
     /* The path should be something like /blah/blah/dosbox-x.app/Contents/MacOS/DosBox */
     /* If that's true, then we can move one level up the tree and look for */
     /* /blah/blah/dosbox-x.app/Contents/Resources */
     {
-        const char *ref = argv[0];
+        const char *ref = exepath.c_str();
         const char *s = strrchr(ref,'/');
         if (s != NULL) {
             if (s > ref) s--;
