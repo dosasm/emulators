@@ -88,6 +88,8 @@ export interface Emulators {
 }
 
 export interface CommandInterface {
+    exited:boolean
+
     // * get bundle config
     config: () => Promise<DosConfig>;
 

@@ -147,7 +147,7 @@ export interface FsNode {
 
 export class CommandInterfaceOverTransportLayer implements CommandInterface {
     private startedAt = Date.now();
-    private exited = false;
+    public exited = false;
     private frameWidth = 0;
     private frameHeight = 0;
     private rgb: Uint8Array | null = null;

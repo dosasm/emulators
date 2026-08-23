@@ -2,7 +2,7 @@ import * as assert from "assert";
 import { EmulatorsImplNode, get_builtin_dist } from "../emulators-nodejs";
 
 
-//
+// 
 // 1. NOTE: dosbox tests must NOT include `exit` in the autoexec config.
 //
 // Root cause: The dosbox WASM build includes "main" in its asyncify whitelist

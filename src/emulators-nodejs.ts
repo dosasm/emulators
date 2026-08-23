@@ -301,7 +301,6 @@ export function get_builtin_dist(){
             project=path.dirname(project);
         }
     }
-    console.log("project:",project);
 
     const BUILTIN = {
         project,

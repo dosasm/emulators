@@ -1,5 +1,5 @@
 import path from "node:path";
-import { EmulatorsImplNode, BUILTIN, CommandInterface } from "../emulators-nodejs";
+import { EmulatorsImplNode, get_builtin_dist, CommandInterface } from "../emulators-nodejs";
 import { Shell } from "../utils/shell";
 import fs from "node:fs";
 import { parseArgs } from "node:util";
@@ -52,6 +52,7 @@ async function main() {
 
     console.log(process.argv, "logging to ", logFile);
 
+    let BUILTIN=get_builtin_dist();
     let pathPrefix=BUILTIN.production;
     if (process.argv.length>3&& process.argv[3]==="dev") {
         pathPrefix=BUILTIN.development;
