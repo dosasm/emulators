@@ -2,7 +2,7 @@ import * as assert from "assert";
 import { EmulatorsImplNode, BUILTIN } from "../emulators-nodejs";
 
 //
-// NOTE: dosbox tests must NOT include `exit` in the autoexec config.
+// 1. NOTE: dosbox tests must NOT include `exit` in the autoexec config.
 //
 // Root cause: The dosbox WASM build includes "main" in its asyncify whitelist
 // (targets/dosbox-asyncify.txt), which causes emscripten_exit_with_live_runtime()
@@ -14,6 +14,33 @@ import { EmulatorsImplNode, BUILTIN } from "../emulators-nodejs";
 // with `exit` in autoexec.
 //
 // Workaround: omit `exit` from dosbox autoexec; let ci.exit() handle cleanup.
+//
+// ──────────────────────────────────────────────────────────────────────────────
+//
+// 2. onUnload is called before onExit
+//
+// onExit:
+//   Interface:  (consumer: () => void) => void   — synchronous
+//   Trigger:    ws-exit server message
+//   C++ side:   requestExit() → jsdos::requestExit() → main loop detects →
+//               runRuntime() → emsc_ws_exit_runtime() → sends ws-exit.
+//               Also triggered by Module.uncaught on abnormal termination.
+//   JS side:    ws-exit → onExit() → fireExit() → calls all onExitConsumers
+//               synchronously (fire-and-forget).
+//   Semantic:   Backend is ALREADY dead. Notify listeners for cleanup only.
+//
+// onUnload:
+//   Interface:  (consumer: () => Promise<void>) => void  — async, returns Promise
+//   Trigger:    ws-unload server message
+//   C++ side:   server_unload() → em_unload() → sends ws-unload and WAITS for
+//               wc-unload response before continuing.
+//   JS side:    ws-unload → fireUnload() → awaits all onUnloadConsumers Promises
+//               → then sends wc-unload back to backend.
+//   Semantic:   Backend asks "can I shut down?" → host does async cleanup
+//               (persist state, close DB, etc.) → replies "yes, go ahead".
+//
+// Key difference: onExit = post-mortem notification (sync).
+//                 onUnload = shutdown handshake (async, bidirectional).
 //
 
 describe("emulators core dosbox", () => {
@@ -165,6 +192,110 @@ exit
             events.onExit(() => { exited = true; });
             await ci.exit();
             assert.ok(exited, message + stdout);
+        });
+    });
+
+    describe("onUnload callback", () => {
+        it("should fire onUnload before onExit (direct)", async () => {
+            const ci = await emulators.dosboxXDirect(init, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let unloaded = false;
+            let exited = false;
+            let unloadBeforeExit = false;
+            events.onUnload(async () => {
+                unloaded = true;
+                if (!exited) {
+                    unloadBeforeExit = true;
+                }
+                // simulate async cleanup
+                await new Promise(r => setTimeout(r, 10));
+            });
+            events.onExit(() => {
+                exited = true;
+                if (unloaded) {
+                    unloadBeforeExit = true;
+                }
+            });
+            await ci.exit();
+            assert.ok(unloaded, "onUnload should have been called");
+            assert.ok(exited, "onExit should have been called");
+            assert.ok(unloadBeforeExit, "onUnload should fire before onExit");
+        });
+        it("should fire onUnload before onExit (node direct)", async () => {
+            const ci = await emulators.dosboxXNodeDirect(init, {}, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let unloaded = false;
+            let exited = false;
+            let unloadBeforeExit = false;
+            events.onUnload(async () => {
+                unloaded = true;
+                if (!exited) {
+                    unloadBeforeExit = true;
+                }
+                await new Promise(r => setTimeout(r, 10));
+            });
+            events.onExit(() => {
+                exited = true;
+                if (unloaded) {
+                    unloadBeforeExit = true;
+                }
+            });
+            await ci.exit();
+            assert.ok(unloaded, "onUnload should have been called");
+            assert.ok(exited, "onExit should have been called");
+            assert.ok(unloadBeforeExit, "onUnload should fire before onExit");
+        });
+        it("should fire onUnload before onExit (worker)", async () => {
+            const ci = await emulators.dosboxXWorker(init, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let unloaded = false;
+            let exited = false;
+            let unloadBeforeExit = false;
+            events.onUnload(async () => {
+                unloaded = true;
+                if (!exited) {
+                    unloadBeforeExit = true;
+                }
+                await new Promise(r => setTimeout(r, 10));
+            });
+            events.onExit(() => {
+                exited = true;
+                if (unloaded) {
+                    unloadBeforeExit = true;
+                }
+            });
+            await ci.exit();
+            assert.ok(unloaded, "onUnload should have been called");
+            assert.ok(exited, "onExit should have been called");
+            assert.ok(unloadBeforeExit, "onUnload should fire before onExit");
+        });
+        it("should fire onUnload before onExit (node worker)", async () => {
+            const ci = await emulators.dosboxXNodeWorker(init, {}, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let unloaded = false;
+            let exited = false;
+            let unloadBeforeExit = false;
+            events.onUnload(async () => {
+                unloaded = true;
+                if (!exited) {
+                    unloadBeforeExit = true;
+                }
+                await new Promise(r => setTimeout(r, 10));
+            });
+            events.onExit(() => {
+                exited = true;
+                if (unloaded) {
+                    unloadBeforeExit = true;
+                }
+            });
+            await ci.exit();
+            assert.ok(unloaded, "onUnload should have been called");
+            assert.ok(exited, "onExit should have been called");
+            assert.ok(unloadBeforeExit, "onUnload should fire before onExit");
         });
     });
 });
