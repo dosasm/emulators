@@ -289,10 +289,10 @@ export class EmulatorsImplNode extends EmulatorsImpl {
 
 
 import path from "path";
-const project = path.resolve(__dirname, "..", "..");
+const project = __filename.endsWith(".ts")? path.resolve(__dirname, ".."):path.resolve(__dirname, "..", "..");
 
 export const BUILTIN = {
     project,
     production: path.join(project, "dist/"),
-    development: path.join(project, "build/wasmDebug/"),
+    development: path.join(project, "build/wasm/"),
 };

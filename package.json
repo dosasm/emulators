@@ -44,6 +44,9 @@
         "url": "https://github.com/caiiiycuk/js-dos/issues"
     },
     "homepage": "https://js-dos.com",
+    "scripts": {
+        "test:node":"mocha"
+    },
     "devDependencies": {
         "@babel/core": "^7.21.4",
         "@babel/preset-env": "^7.21.4",

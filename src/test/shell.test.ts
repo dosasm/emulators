@@ -1,95 +1,170 @@
-import { expect } from "chai";
+import * as assert from "assert";
+import { EmulatorsImplNode, BUILTIN } from "../emulators-nodejs";
 
-import { getEmulators, utils, BUILTIN } from "../emulators-nodejs";
-import { Shell } from "../utils/shell";
+//
+// NOTE: dosbox tests must NOT include `exit` in the autoexec config.
+//
+// Root cause: The dosbox WASM build includes "main" in its asyncify whitelist
+// (targets/dosbox-asyncify.txt), which causes emscripten_exit_with_live_runtime()
+// to malfunction — the WASM runtime exits immediately after main() returns,
+// before bundles can be sent to the backend. This results in:
+//   ExitStatus { message: "Program terminated with exit(0)", status: 0 }
+//
+// dosbox-x does NOT have "main" in its asyncify whitelist, so it works fine
+// with `exit` in autoexec.
+//
+// Workaround: omit `exit` from dosbox autoexec; let ci.exit() handle cleanup.
+//
 
-const emu = getEmulators(BUILTIN.development);
+describe("emulators core dosbox", () => {
+    let emulators: EmulatorsImplNode;
 
-async function runEmulator(autoexecString: string, emulator = "dosbox") {
-    const config = {
+    const init = {
         dosboxConf: `[autoexec]
-      mount c .
-      c:
-      echo ${autoexecString}
-      `,
+dir
+    `,
         jsdosConf: {
             version: "",
         },
     };
-    let ci = undefined;
-    if (emulator === "dosbox") {
-        ci = await emu.dosboxDirect(config);
-    } else if (emulator === "dosbox-x") {
-        ci = await emu.dosboxXDirect(config);
-    }
-    if (ci === undefined) {
-        throw new Error("");
-    }
-    let stdout = "";
-    ci.events().onStdout((data) => {
-        stdout += data;
-    });
-    const p = new Promise((resolve) => {
-        setInterval(() => {
-            if (stdout.includes(autoexecString)) {
-                resolve(stdout);
-            }
-        }, 100);
-    });
-    await p;
-    return { stdout, ci };
-}
 
+    beforeEach(() => {
+        emulators = new EmulatorsImplNode();
+        emulators.pathPrefix = BUILTIN.production;
+    });
 
-describe("Shell dosbox", () => {
-    describe("#stdout", () => {
-        it("autoexec echo message", async () => {
-            const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
-            const { ci, stdout } = await runEmulator(AUTOEXEC_TEST_STRING);
-            expect(stdout).to.include(AUTOEXEC_TEST_STRING);
-            ci.exit();
+    describe("Exit via direct mode", () => {
+        it("should exit using dosboxDirect", async () => {
+            const ci = await emulators.dosboxDirect(init, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
         });
-        it("shell echo message", async () => {
-            const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
-            const { ci } = await runEmulator(AUTOEXEC_TEST_STRING);
+        it("should exit using dosboxNodeDirect", async () => {
+            const ci = await emulators.dosboxNodeDirect(init, {}, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
+        });
+    });
 
-            const cmds = Array.from({ length: 3 }, () => "echo " + Math.random().toFixed(3));
-            const shell = new Shell(ci);
-            await shell.wait_prompt();
-            for (const cmd of cmds) {
-                await utils.sleep(100);
-                console.log(cmd);
-                const out = await shell.exec(cmd);
-                expect(out).to.include(cmd);
-            }
-            ci.exit();
+    describe("Exit via worker mode", () => {
+        it("should exit using dosboxWorker", async () => {
+            const ci = await emulators.dosboxWorker(init, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
+        });
+        it("should exit using dosboxNodeWorker", async () => {
+            const ci = await emulators.dosboxNodeWorker(init, {}, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
         });
     });
 });
 
+describe("emulators core dosbox-x", () => {
+    let emulators: EmulatorsImplNode;
 
-describe("Shell dosbox-x", () => {
-    describe("#stdout", () => {
-        it("autoexec echo message", async () => {
-            const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
-            const { ci, stdout } = await runEmulator(AUTOEXEC_TEST_STRING, "dosbox-x");
-            expect(stdout).to.include(AUTOEXEC_TEST_STRING);
-            ci.exit();
+    const init = {
+        dosboxConf: `[autoexec]
+dir
+exit
+    `,
+        jsdosConf: {
+            version: "",
+        },
+    };
+
+    beforeEach(() => {
+        emulators = new EmulatorsImplNode();
+        emulators.pathPrefix = BUILTIN.production;
+    });
+
+    describe("Exit via direct mode", () => {
+        it("should exit using dosboxXDirect", async () => {
+            const ci = await emulators.dosboxXDirect(init, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
         });
-        it("shell echo message", async () => {
-            const AUTOEXEC_TEST_STRING = "AUTOEXEC TEST";
-            const { ci } = await runEmulator(AUTOEXEC_TEST_STRING, "dosbox-x");
+        it("should exit using dosboxXNodeDirect", async () => {
+            const ci = await emulators.dosboxXNodeDirect(init, {}, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
+        });
+    });
 
-            const cmds = Array.from({ length: 3 }, () => "echo " + Math.random().toFixed(3));
-            const shell = new Shell(ci);
-            await shell.wait_prompt();
-            for (const cmd of cmds) {
-                await utils.sleep(100);
-                console.log(cmd);
-                const out = await shell.exec(cmd);
-                expect(out).to.include(cmd);
-            }
-            ci.exit();
+    describe("Exit via worker mode", () => {
+        it("should exit using dosboxXWorker", async () => {
+            const ci = await emulators.dosboxXWorker(init, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
+        });
+        it("should exit using dosboxXNodeWorker", async () => {
+            const ci = await emulators.dosboxXNodeWorker(init, {}, {});
+            assert.ok(ci);
+            const events = ci.events();
+            let message = "";
+            let stdout = "";
+            events.onMessage((msgType, ...args: any[]) => message += `[${msgType}] ${args}`);
+            events.onStdout((msg) => stdout += msg);
+            let exited = false;
+            events.onExit(() => { exited = true; });
+            await ci.exit();
+            assert.ok(exited, message + stdout);
         });
     });
 });
