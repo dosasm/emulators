@@ -60,8 +60,8 @@ yarn run gulp js # build js code
 
 ```bash
 source "/Users/a1/sys/emsdk/emsdk_env.sh"
-mkdir -p build/wasmRelease
-cd build/wasmRease
+mkdir -p build/wasm
+cd build/wasm
 emcmake cmake -G "Ninja" ../..
 ninja -j8 wlibzip
 ninja -j8 wdosbox
