@@ -1,9 +1,3 @@
-#ifndef GL_SILENCE_DEPRECATION
-#define GL_SILENCE_DEPRECATION
-#endif
-
-#include <GL/gl.h>
-
 #include <stdlib.h>
 #include <math.h>
 #include <map>

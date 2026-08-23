@@ -707,6 +707,15 @@ if (GL4ES)
     target_include_directories(libdosbox-x-jsdos PUBLIC ${GL4ES_INCLUDE})
 endif()
 
+# On macOS, Apple's system glext.h (pulled in by <GL/gl.h>) does not provide
+# the Khronos-style PFNGL* typedefs that DOSBox-X's voodoo_vogl.h needs.
+# Force-include a compatibility shim so the vendored submodule builds unmodified.
+if (APPLE AND NOT EMSCRIPTEN)
+    set(DOSBOX_X_GL_EXT_FIX "${NATIVE_DIR}/config/macos-glext-fix.h")
+    target_compile_options(libdosbox-x-sdl2 PRIVATE "-include" "${DOSBOX_X_GL_EXT_FIX}")
+    target_compile_options(libdosbox-x-jsdos PRIVATE "-include" "${DOSBOX_X_GL_EXT_FIX}")
+endif ()
+
 add_executable(dosbox-x-sdl2 ${SOURCES_X_SDL_MAIN}
         "${NATIVE_DIR}/jsdos/jsdos-asyncify.cpp")
 target_compile_definitions(dosbox-x-sdl2 PUBLIC -DJSDOS_SDL)
