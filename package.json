@@ -45,7 +45,7 @@
     },
     "homepage": "https://js-dos.com",
     "scripts": {
-        "test:node":"mocha"
+        "test:node":"mocha --timeout=1s"
     },
     "devDependencies": {
         "@babel/core": "^7.21.4",

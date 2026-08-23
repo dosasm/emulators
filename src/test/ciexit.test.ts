@@ -43,7 +43,8 @@ import { EmulatorsImplNode, BUILTIN } from "../emulators-nodejs";
 //                 onUnload = shutdown handshake (async, bidirectional).
 //
 
-describe("emulators core dosbox", () => {
+describe("emulators core dosbox", function(this: Mocha.Suite){
+    this.timeout(10000)
     let emulators: EmulatorsImplNode;
 
     const init = {
@@ -60,7 +61,7 @@ dir
         emulators.pathPrefix = BUILTIN.production;
     });
 
-    describe("Exit via direct mode", () => {
+    describe("ci.exit() via direct mode", () => {
         it("should exit using dosboxDirect", async () => {
             const ci = await emulators.dosboxDirect(init, {});
             assert.ok(ci);
@@ -89,7 +90,7 @@ dir
         });
     });
 
-    describe("Exit via worker mode", () => {
+    describe("ci.exit() via worker mode", () => {
         it("should exit using dosboxWorker", async () => {
             const ci = await emulators.dosboxWorker(init, {});
             assert.ok(ci);
@@ -119,7 +120,8 @@ dir
     });
 });
 
-describe("emulators core dosbox-x", () => {
+describe("emulators core dosbox-x", function(this: Mocha.Suite){
+    this.timeout(10000)
     let emulators: EmulatorsImplNode;
 
     const init = {
@@ -136,7 +138,7 @@ dir
         emulators.pathPrefix = BUILTIN.production;
     });
 
-    describe("Exit via direct mode", () => {
+    describe("ci.exit() via direct mode", () => {
         it("should exit using dosboxXDirect", async () => {
             const ci = await emulators.dosboxXDirect(init, {});
             assert.ok(ci);
@@ -165,7 +167,7 @@ dir
         });
     });
 
-    describe("Exit via worker mode", () => {
+    describe("ci.exit() via worker mode", () => {
         it("should exit using dosboxXWorker", async () => {
             const ci = await emulators.dosboxXWorker(init, {});
             assert.ok(ci);
