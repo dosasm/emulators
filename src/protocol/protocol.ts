@@ -198,6 +198,7 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
 
     private dataChunkPromise: { [name: string]: Promise<void> } = {};
     private dataChunkResolve: { [name: string]: () => void } = {};
+    private dataChunkTerminated = false;
 
     private persistSockdrivesPromise: Promise<Uint8Array | null> | null = null;
     private persistSockdrivesResolve: (changes: Uint8Array | null) => void = () => {/**/};
@@ -313,6 +314,16 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
                     .catch((e) => {
                         this.onErr("panic", "Can't send bundles to backend: " + e.message);
                         console.error(e);
+                        // If the backend exited during bundle sending (e.g., autoexec exit),
+                        // resolve the init promise and fire exit events so the caller
+                        // doesn't hang indefinitely.
+                        if (e.name === "ExitStatus") {
+                            this.onExit();
+                            if (this.ready) {
+                                this.ready(null);
+                                delete (this as any).ready;
+                            }
+                        }
                     })
                     .finally(() => {
                         delete this.init;
@@ -715,6 +726,16 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
     private onExit() {
         if (!this.exited) {
             this.exited = true;
+            this.dataChunkTerminated = true;
+
+            // Resolve all pending data chunk promises so sendBundles
+            // doesn't hang waiting for responses from a dead backend.
+            for (const key of Object.keys(this.dataChunkResolve)) {
+                this.dataChunkResolve[key]();
+                delete this.dataChunkPromise[key];
+                delete this.dataChunkResolve[key];
+            }
+
             if (this.netPollInterval !== null) {
                 clearInterval(this.netPollInterval);
                 this.netPollInterval = null;
@@ -722,6 +743,19 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
             if (this.transport.exit !== undefined) {
                 this.transport.exit();
             }
+
+            // Resolve the init promise if it's still pending (e.g., backend
+            // exited before ws-server-ready was received).
+            if (this.ready) {
+                this.ready(null);
+                delete (this as any).ready;
+            }
+
+            // Fire exit events directly (not just through exitPromise)
+            // so callers that register onExit after the backend has already
+            // exited still receive the event via delayed exit.
+            this.events().fireExit();
+
             if (this.exitResolve) {
                 this.exitResolve();
                 delete this.exitPromise;
@@ -866,6 +900,12 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
     }
 
     private async sendDataChunk(chunk: DataChunk): Promise<void> {
+        // If the backend already exited, silently ignore the send attempt
+        // so the caller doesn't hang waiting for a response.
+        if (this.dataChunkTerminated) {
+            return;
+        }
+
         if (chunk.data === null || chunk.data.byteLength <= maxDataChunkSize) {
             return this.sendFullDataChunk(chunk);
         } else {

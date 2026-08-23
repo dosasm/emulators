@@ -10,6 +10,7 @@ export class CommandInterfaceEventsImpl implements CommandInterfaceEvents {
     private onFrameConsumers: ((rgb: Uint8Array | null, rgba: Uint8Array | null) => void)[] = [];
     private onSoundPushConsumers: ((samples: Float32Array) => void)[] = [];
     private onExitConsumers: (() => void)[] = [];
+    private delayedExit = false;
 
     private onMessageConsumers: ((msgType: MessageType, ...args: any[]) => void)[] = [];
     private delayedMessages: {msgType: MessageType, args: any[]}[] = [];
@@ -44,6 +45,12 @@ export class CommandInterfaceEventsImpl implements CommandInterfaceEvents {
 
     onExit = (consumer: () => void) => {
         this.onExitConsumers.push(consumer);
+        // If fireExit was called before any consumer was registered,
+        // fire it immediately for the newly registered consumer.
+        if (this.delayedExit) {
+            this.delayedExit = false;
+            this.fireExit();
+        }
     };
 
     onMessage = (consumer: (msgType: MessageType, ...args: any[]) => void) => {
@@ -99,6 +106,13 @@ export class CommandInterfaceEventsImpl implements CommandInterfaceEvents {
     };
 
     fireExit = () => {
+        // If no consumers are registered yet, delay the exit event
+        // so that it fires when the first consumer is registered.
+        if (this.onExitConsumers.length === 0) {
+            this.delayedExit = true;
+            return;
+        }
+
         for (const next of this.onExitConsumers) {
             next();
         }

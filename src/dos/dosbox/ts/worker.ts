@@ -16,16 +16,24 @@ export async function dosWorker(workerUrl: string,
     let handler: MessageHandler = messagesQueue.handler.bind(messagesQueue);
 
     const onerror = (e:ErrorEvent) => {
-        handler("ws-err", { type: e.type, filename: e.filename, message: e.message });
+        handler("ws-err", { sessionId, tag: e.type, message: e.message });
     };
     const onmessage = (e:MessageEvent) => {
         const data = e.data;
         if (data?.name !== undefined) {
-            handler(data.name, data.props);
+            handler(data.name, data.props ?? { sessionId });
         }
     };
 
     const worker = await platform.current.createWorker(workerUrl, onerror, onmessage);
+
+    // Detect worker exit (e.g., due to autoexec exit) and fire exit event
+    // so the caller doesn't hang waiting for responses from a dead worker.
+    if (typeof (worker as any).on === "function") {
+        (worker as any).on("exit", (code: number) => {
+            handler("ws-exit", { sessionId });
+        });
+    }
 
     const transportLayer: TransportLayer = {
         sessionId,

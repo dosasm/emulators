@@ -5,55 +5,55 @@
 // gulpfile.ts/wasm.ts --> generateBuildInfo
 
 export const Build = {
-    version: "8.4.1-dosasm0.1 (e598801bec42f6b0da2dda64ec844605)",
-    buildSeed: 1787467627785,
+    version: "8.4.1-dosasm0.1 (c67ac426f6d947635938c32882064912)",
+    buildSeed: 1787469062485,
     "wdosbox-nodefs.wasm": {
         "size": 1459779,
-        "gzSize": 501301
+        "gzSize": 0
     },
     "wdosbox-nodefs.js": {
         "size": 117551,
-        "gzSize": 31661
+        "gzSize": 0
     },
     "wdosbox-x-jspi.wasm": {
         "size": 7716030,
-        "gzSize": 2696028
+        "gzSize": 0
     },
     "wdosbox-x-jspi.js": {
         "size": 230216,
-        "gzSize": 54399
+        "gzSize": 0
     },
     "wdosbox-x-nodefs.wasm": {
         "size": 7858987,
-        "gzSize": 2746390
+        "gzSize": 0
     },
     "wdosbox-x-nodefs.js": {
         "size": 236305,
-        "gzSize": 57456
+        "gzSize": 0
     },
     "wdosbox-x.wasm": {
         "size": 7858987,
-        "gzSize": 2746383
+        "gzSize": 0
     },
     "wdosbox-x.js": {
         "size": 229416,
-        "gzSize": 55258
+        "gzSize": 0
     },
     "wdosbox.wasm": {
         "size": 1459779,
-        "gzSize": 501294
+        "gzSize": 0
     },
     "wdosbox.js": {
         "size": 110662,
-        "gzSize": 29343
+        "gzSize": 0
     },
     "wlibzip.wasm": {
         "size": 112479,
-        "gzSize": 52033
+        "gzSize": 0
     },
     "wlibzip.js": {
         "size": 72957,
-        "gzSize": 19386
+        "gzSize": 0
     }
 ,
 };

@@ -1,6 +1,7 @@
 
 // Check if running in Node.js environment
-if (typeof global === "object" && typeof process === "object") {
+if (typeof global === "object" && typeof process === "object" && !global.__workerServerInitialized) {
+  global.__workerServerInitialized = true;
   const { parentPort, workerData } = require('worker_threads');
   
   // Create browser-like 'self' global object
