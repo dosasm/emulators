@@ -125,7 +125,6 @@ describe("emulators core dosbox-x", () => {
     const init = {
         dosboxConf: `[autoexec]
 dir
-exit
     `,
         jsdosConf: {
             version: "",
