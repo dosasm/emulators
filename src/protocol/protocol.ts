@@ -726,6 +726,12 @@ export class CommandInterfaceOverTransportLayer implements CommandInterface {
                 this.exitResolve();
                 delete this.exitPromise;
                 delete this.exitResolve;
+            } else {
+                // exit() was never called (e.g. worker crashed) — still fire onExit consumers
+                this.exitPromise = Promise.resolve();
+                this.exitPromise.then(() => {
+                    this.events().fireExit();
+                });
             }
         }
     }

@@ -17,6 +17,8 @@ export async function dosWorker(workerUrl: string,
 
     const onerror = (e:ErrorEvent) => {
         handler("ws-err", { type: e.type, filename: e.filename, message: e.message });
+        // Worker stopped unexpectedly — trigger exit flow so onExit consumers fire
+        handler("ws-exit", {});
     };
     const onmessage = (e:MessageEvent) => {
         const data = e.data;

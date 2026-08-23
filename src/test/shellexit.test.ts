@@ -55,6 +55,7 @@ echo ${randomString}
             })
             await shell.exec("exit").catch(console.error);
             const onExitCalled=await ExitedCalledPromise;
+            console.log(funcname+" onExit called",onExitCalled)
             assert.ok(ci.exited, message + stdout);
         }
 
